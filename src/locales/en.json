@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "home": "Home",
+    "pricing": "Pricing",
+    "ourStory": "Our Story",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "tagline": "AI cofounder",
+    "title": "Make something people actually want",
+    "subtitle": "Research and plan your product with AI",
+    "inputPlaceholder": "I want to create",
+    "brainstormIdeas": "Brainstorm ideas",
+    "privacyMode": "Privacy mode"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "welcome": "Welcome to Found Your Path"
+  },
+  "idea": {
+    "title": "Describe Your Idea",
+    "placeholder": "Tell us about your business idea in detail...",
+    "analyzing": "Analyzing your idea...",
+    "category": "Category",
+    "next": "Next Step"
+  },
+  "questions": {
+    "title": "Let's refine your idea",
+    "subtitle": "Answer a few questions to help us understand your vision better",
+    "continue": "Continue",
+    "back": "Back"
+  },
+  "path": {
+    "title": "Your Path to Success",
+    "subtitle": "Follow your personalized roadmap",
+    "node": {
+      "clickToExplore": "Click to explore",
+      "completed": "Completed",
+      "inProgress": "In Progress",
+      "notStarted": "Not Started"
+    }
+  },
+  "resources": {
+    "title": "Recommended Resources",
+    "courses": "Courses",
+    "articles": "Articles",
+    "books": "Books",
+    "tools": "Tools"
+  },
+  "pdf": {
+    "preview": "Preview Report",
+    "download": "Download PDF",
+    "price": "$2 USD",
+    "title": "Your Project Blueprint",
+    "generating": "Generating your blueprint..."
+  },
+  "payment": {
+    "title": "Download Your Blueprint",
+    "description": "Get your complete project blueprint as a professional PDF",
+    "price": "$2.00",
+    "currency": "USD",
+    "payNow": "Pay Now",
+    "processing": "Processing payment...",
+    "success": "Payment successful!",
+    "error": "Payment failed. Please try again."
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "users": "Users",
+    "ideas": "Ideas",
+    "payments": "Payments",
+    "resources": "Resources",
+    "analytics": "Analytics"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  }
+}
