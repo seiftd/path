@@ -34,12 +34,21 @@ export default function NewIdea() {
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.analysis) {
         setAnalysis(data.analysis);
+      } else if (data.error) {
+        console.error('API Error:', data.error);
+        // Show user-friendly error message
+        alert('Failed to analyze idea. Please try again.');
       }
     } catch (error) {
       console.error('Error analyzing idea:', error);
+      alert('Network error. Please check your connection and try again.');
     } finally {
       setIsAnalyzing(false);
     }

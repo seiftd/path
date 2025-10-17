@@ -1,17 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ArrowUp, Lightbulb, Shield } from 'lucide-react';
+import { ArrowUp, Lightbulb, Shield, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
   const { t } = useTranslation();
   const { isSignedIn } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -25,6 +27,7 @@ export default function Home() {
             <span className="font-bold text-xl text-gray-900">foundyourpath.com</span>
           </div>
           
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">
               {t('nav.pricing')}
@@ -46,8 +49,63 @@ export default function Home() {
               </div>
             )}
           </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
       </header>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-b shadow-lg">
+          <div className="container mx-auto px-4 py-4 space-y-4">
+            <a 
+              href="#pricing" 
+              className="block text-gray-600 hover:text-gray-900 transition-colors py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('nav.pricing')}
+            </a>
+            <a 
+              href="#story" 
+              className="block text-gray-600 hover:text-gray-900 transition-colors py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              {t('nav.ourStory')}
+            </a>
+            <div className="py-2">
+              <LanguageSwitcher />
+            </div>
+            {isSignedIn ? (
+              <div className="py-2">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-3 py-2">
+                <SignInButton>
+                  <Button variant="ghost" className="w-full justify-start">
+                    {t('nav.signIn')}
+                  </Button>
+                </SignInButton>
+                <SignUpButton>
+                  <Button className="w-full">
+                    {t('nav.getStarted')}
+                  </Button>
+                </SignUpButton>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16">

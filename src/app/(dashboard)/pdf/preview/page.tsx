@@ -95,25 +95,37 @@ export default function PDFPreview() {
     setPaymentProcessing(true);
     
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Get current idea ID from localStorage or generate one
+      const ideaData = JSON.parse(localStorage.getItem('currentIdea') || '{}');
+      const ideaId = ideaData.id || `idea_${Date.now()}`;
       
-      // In real app, integrate with Dodo Payments
-      console.log('Payment processed successfully');
+      // Create payment with Dodo Payments
+      const response = await fetch('/api/payment/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ideaId: ideaId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Payment creation failed: ${response.status}`);
+      }
+
+      const paymentData = await response.json();
       
-      // Generate and download PDF
-      const pdfBlob = await generatePDF();
-      const url = URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'business-blueprint.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      if (paymentData.payment_url) {
+        // Redirect to Dodo Payments checkout
+        window.location.href = paymentData.payment_url;
+      } else {
+        throw new Error('No payment URL received');
+      }
       
     } catch (error) {
       console.error('Payment failed:', error);
+      alert('Payment failed. Please try again or contact support.');
     } finally {
       setPaymentProcessing(false);
       setShowPayment(false);
