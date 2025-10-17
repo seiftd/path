@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Webhook, WebhookEvent } from 'svix';
+import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { createUser, getUserById } from '@/lib/db';
 
@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
     const body = JSON.stringify(payload);
 
     const wh = new Webhook(webhookSecret);
-    let evt: WebhookEvent;
+    let evt: { type: string; data: any };
 
     try {
       evt = wh.verify(body, {
         'svix-id': svixId,
         'svix-timestamp': svixTimestamp,
         'svix-signature': svixSignature,
-      }) as WebhookEvent;
+      }) as { type: string; data: any };
     } catch (err) {
       console.error('Error verifying webhook:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
