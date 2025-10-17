@@ -31,6 +31,7 @@ interface PathData {
   nodes: PathNode[];
   title: string;
   description: string;
+  category?: string;
 }
 
 export default function GeneratePath() {
@@ -58,7 +59,8 @@ export default function GeneratePath() {
           theme: getThemeFromCategory(category),
           nodes: generateMockNodes(category),
           title: ideaData.text || 'Your Project Path',
-          description: `Auto-generated steps for category: ${category}`
+          description: `Auto-generated steps for category: ${category}`,
+          category
         };
         setPathData(mockPathData);
         setIsGenerating(false);
