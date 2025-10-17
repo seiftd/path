@@ -26,11 +26,18 @@ interface PathNode {
   }>;
 }
 
+interface PathData {
+  theme: string;
+  nodes: PathNode[];
+  title: string;
+  description: string;
+}
+
 export default function GeneratePath() {
   const { t } = useTranslation();
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(true);
-  const [pathData, setPathData] = useState<any>(null);
+  const [pathData, setPathData] = useState<PathData | null>(null);
   const [selectedNode, setSelectedNode] = useState<PathNode | null>(null);
   const [completedNodes, setCompletedNodes] = useState<string[]>([]);
 
@@ -163,13 +170,16 @@ export default function GeneratePath() {
   };
 
   const handleNodeComplete = (nodeId: string) => {
-    setCompletedNodes(prev => [...prev, nodeId]);
-    setPathData(prev => ({
-      ...prev,
-      nodes: prev.nodes.map((node: PathNode) => 
-        node.id === nodeId ? { ...node, status: 'completed' as const } : node
-      )
-    }));
+    setCompletedNodes((prev: string[]) => [...prev, nodeId]);
+    setPathData((prev: PathData | null) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        nodes: prev.nodes.map((node: PathNode) => 
+          node.id === nodeId ? { ...node, status: 'completed' as const } : node
+        )
+      };
+    });
   };
 
   const renderPathVisualization = () => {
