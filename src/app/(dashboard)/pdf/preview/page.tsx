@@ -122,6 +122,11 @@ export default function PDFPreview() {
 
   const generatePDF = async () => {
     // In real app, this would call the PDF generation API
+    const sections = Object
+      .entries(pdfData.pathContent as Record<string, string[]>)
+      .map(([category, steps]) => `${category}:\n${steps.map((step) => `- ${step}`).join('\n')}`)
+      .join('\n\n');
+
     const mockPDFContent = `
       Business Blueprint Report
       Generated for: ${pdfData.user.name}
@@ -131,9 +136,7 @@ export default function PDFPreview() {
       ${pdfData.idea.text}
       
       Business Plan:
-      ${Object.entries(pdfData.pathContent).map(([category, steps]) => 
-        `${category}:\n${steps.map(step => `- ${step}`).join('\n')}`
-      ).join('\n\n')}
+      ${sections}
     `;
     
     return new Blob([mockPDFContent], { type: 'application/pdf' });
@@ -209,11 +212,11 @@ export default function PDFPreview() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Business Plan</h3>
                 <div className="space-y-6">
-                  {Object.entries(pdfData.pathContent).map(([category, steps]: [string, any]) => (
+                  {Object.entries(pdfData.pathContent as Record<string, string[]>).map(([category, steps]) => (
                     <div key={category}>
                       <h4 className="font-medium text-gray-900 mb-2">{category}</h4>
                       <ul className="space-y-1">
-                        {steps.map((step: string, index: number) => (
+                        {steps.map((step, index) => (
                           <li key={index} className="flex items-start space-x-2">
                             <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-700">{step}</span>
