@@ -229,7 +229,8 @@ export const getUserById = async (userId: string) => {
       'SELECT * FROM users WHERE id = ?',
       [userId]
     );
-    return rows[0];
+    const list = rows as any[];
+    return list && list.length > 0 ? list[0] : null;
   } finally {
     connection.release();
   }
