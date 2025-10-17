@@ -53,11 +53,12 @@ export default function GeneratePath() {
 
       // Simulate path generation (in real app, this would call API)
       setTimeout(() => {
-        const mockPathData = {
-          theme: getThemeFromCategory(ideaData.analysis?.category || 'general'),
-          nodes: generateMockNodes(ideaData.analysis?.category || 'general'),
-          idea: ideaData.text,
-          category: ideaData.analysis?.category || 'general'
+        const category = ideaData.analysis?.category || 'general';
+        const mockPathData: PathData = {
+          theme: getThemeFromCategory(category),
+          nodes: generateMockNodes(category),
+          title: ideaData.text || 'Your Project Path',
+          description: `Auto-generated steps for category: ${category}`
         };
         setPathData(mockPathData);
         setIsGenerating(false);
