@@ -19,7 +19,7 @@ export const getRecommendedResources = async (
 ): Promise<ResourceRecommendation[]> => {
   try {
     // Get all resources
-    const allResources = await getAllResources(userLanguage);
+    const allResources = await getAllResources(userLanguage) as any[];
     
     // Calculate relevance scores based on idea category
     const scoredResources = allResources.map(resource => {
@@ -116,7 +116,7 @@ export const getResourcesForPathNode = async (
   userLanguage: string = 'en'
 ): Promise<ResourceRecommendation[]> => {
   try {
-    const resources = await getResourcesByCategory(nodeCategory, userLanguage);
+    const resources = await getResourcesByCategory(nodeCategory, userLanguage) as any[];
     
     return resources.map(resource => ({
       ...resource,
@@ -139,10 +139,10 @@ export const searchResources = async (
   }
 ): Promise<ResourceRecommendation[]> => {
   try {
-    const allResources = await getAllResources(userLanguage);
+    const allResources = await getAllResources(userLanguage) as any[];
     
     // Filter resources based on search query and filters
-    let filteredResources = allResources.filter(resource => {
+    let filteredResources = (allResources as any[]).filter(resource => {
       const matchesQuery = !query || 
         resource.title.toLowerCase().includes(query.toLowerCase()) ||
         resource.description?.toLowerCase().includes(query.toLowerCase());
