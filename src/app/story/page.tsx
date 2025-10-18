@@ -4,10 +4,15 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Play, Star, Quote, Users, TrendingUp, Award } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 
 export default function StoryPage() {
   const { t } = useTranslation();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const testimonials = [
     {
@@ -47,16 +52,23 @@ export default function StoryPage() {
     { number: "24/7", label: "دعم متاح" }
   ];
 
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Hero Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <h1 className="text-5xl font-bold text-gray-900 mb-6">
               {t('story.title')}
             </h1>
@@ -66,7 +78,7 @@ export default function StoryPage() {
             <p className="text-lg text-gray-700 max-w-4xl mx-auto leading-relaxed">
               {t('story.description')}
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -108,11 +120,8 @@ export default function StoryPage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
                 className="text-center"
               >
                 <div className="text-4xl font-bold text-blue-600 mb-2">
@@ -121,7 +130,7 @@ export default function StoryPage() {
                 <div className="text-gray-600">
                   {stat.label}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -141,11 +150,8 @@ export default function StoryPage() {
 
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card className="p-6 bg-white shadow-lg h-full">
                   <div className="flex items-start space-x-4">
@@ -171,7 +177,7 @@ export default function StoryPage() {
                     </div>
                   </div>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -180,11 +186,7 @@ export default function StoryPage() {
       {/* CTA Section */}
       <section className="py-16 bg-blue-600">
         <div className="container mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <div>
             <h2 className="text-3xl font-bold text-white mb-4">
               ابدأ رحلتك اليوم
             </h2>
@@ -197,7 +199,7 @@ export default function StoryPage() {
             >
               ابدأ مجاناً الآن
             </Button>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
