@@ -75,6 +75,45 @@
     "resources": "Resources",
     "analytics": "Analytics"
   },
+  "features": {
+    "title": "Transform Your Idea Into Action",
+    "subtitle": "Our AI-powered platform guides you through every step of turning your idea into a structured business plan",
+    "aiAnalysis": {
+      "title": "AI Analysis",
+      "description": "Our AI analyzes your idea and asks intelligent questions to refine your vision"
+    },
+    "visualPath": {
+      "title": "Visual Path",
+      "description": "Follow your personalized roadmap with interactive visualizations that adapt to your idea"
+    },
+    "professionalReport": {
+      "title": "Professional Report",
+      "description": "Download your complete business blueprint as a professional PDF for just $2"
+    }
+  },
+  "pricing": {
+    "title": "Simple Pricing",
+    "subtitle": "Get your complete business blueprint for just $2"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "welcome": "Welcome to Found Your Path",
+    "createAccount": "Create your account",
+    "startJourney": "Start your journey with Found Your Path"
+  },
+  "story": {
+    "title": "Our Story",
+    "subtitle": "How Found Your Path came to life",
+    "description": "We believe every great idea deserves a chance to become reality. Our platform combines the power of AI with human creativity to help entrepreneurs turn their visions into successful businesses.",
+    "videoTitle": "See Found Your Path in Action",
+    "videoDescription": "Watch how our AI-powered platform transforms your business idea into a complete roadmap"
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "subtitle": "Join thousands of entrepreneurs who have transformed their ideas"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong",
