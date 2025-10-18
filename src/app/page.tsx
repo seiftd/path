@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/navigation';
 import { SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -14,6 +15,8 @@ export default function Home() {
   const { t } = useTranslation();
   const { isSignedIn } = useUser();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [ideaInput, setIdeaInput] = useState('');
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -141,9 +144,27 @@ export default function Home() {
                     type="text"
                     placeholder={t('hero.inputPlaceholder')}
                     className="w-full text-lg bg-transparent border-none outline-none placeholder-gray-400"
+                    value={ideaInput}
+                    onChange={(e) => setIdeaInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && ideaInput.trim()) {
+                        localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                        router.push('/idea/new');
+                      }
+                    }}
                   />
                 </div>
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  onClick={() => {
+                    if (ideaInput.trim()) {
+                      localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                      router.push('/idea/new');
+                    }
+                  }}
+                  disabled={!ideaInput.trim()}
+                >
                   <ArrowUp className="w-4 h-4" />
                 </Button>
               </div>
@@ -171,10 +192,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Transform Your Idea Into Action
+              {t('features.title')}
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Our AI-powered platform guides you through every step of turning your idea into a structured business plan.
+              {t('features.subtitle')}
             </p>
           </div>
 
@@ -183,9 +204,9 @@ export default function Home() {
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <span className="text-blue-600 text-xl">💡</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('features.aiAnalysis.title')}</h3>
               <p className="text-gray-600">
-                Our AI analyzes your idea and asks intelligent questions to refine your vision.
+                {t('features.aiAnalysis.description')}
               </p>
             </Card>
 
@@ -193,9 +214,9 @@ export default function Home() {
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <span className="text-green-600 text-xl">🌳</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Visual Path</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('features.visualPath.title')}</h3>
               <p className="text-gray-600">
-                Follow your personalized roadmap with interactive visualizations that adapt to your idea.
+                {t('features.visualPath.description')}
               </p>
             </Card>
 
@@ -203,9 +224,9 @@ export default function Home() {
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
                 <span className="text-purple-600 text-xl">📄</span>
               </div>
-              <h3 className="text-xl font-semibold mb-2">Professional Report</h3>
+              <h3 className="text-xl font-semibold mb-2">{t('features.professionalReport.title')}</h3>
               <p className="text-gray-600">
-                Download your complete business blueprint as a professional PDF for just $2.
+                {t('features.professionalReport.description')}
               </p>
             </Card>
           </div>
@@ -215,8 +236,8 @@ export default function Home() {
       {/* Pricing Section */}
       <section id="pricing" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple Pricing</h2>
-          <p className="text-gray-600 mb-8">Get your complete business blueprint for just $2</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('pricing.title')}</h2>
+          <p className="text-gray-600 mb-8">{t('pricing.subtitle')}</p>
           
           <Card className="max-w-md mx-auto p-8 bg-white shadow-lg">
             <div className="text-4xl font-bold text-gray-900 mb-2">$2</div>
