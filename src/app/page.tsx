@@ -137,8 +137,13 @@ export default function Home() {
                     onChange={(e) => setIdeaInput(e.target.value)}
                     onKeyPress={(e) => {
                       if (e.key === 'Enter' && ideaInput.trim()) {
-                        localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
-                        router.push('/idea/new');
+                        if (!isSignedIn) {
+                          localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                          router.push('/sign-in');
+                        } else {
+                          localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                          router.push('/idea/new');
+                        }
                       }
                     }}
                   />
@@ -148,8 +153,13 @@ export default function Home() {
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   onClick={() => {
                     if (ideaInput.trim()) {
-                      localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
-                      router.push('/idea/new');
+                      if (!isSignedIn) {
+                        localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                        router.push('/sign-in');
+                      } else {
+                        localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
+                        router.push('/idea/new');
+                      }
                     }
                   }}
                   disabled={!ideaInput.trim()}
@@ -227,10 +237,10 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
-              How Found Your Path Works
+              How Our Monthly Subscription Works
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
-              A simple journey from idea to comprehensive business plan
+              Transform your business ideas into actionable plans with our comprehensive monthly SaaS platform
             </p>
           </div>
 
@@ -251,7 +261,7 @@ export default function Home() {
                     </div>
                   </div>
                   <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-                    Describe your business idea in detail. Our AI will analyze your concept and understand your vision to provide personalized guidance.
+                    Start with our 7-day free trial! Describe your business idea in detail. Our AI will analyze your concept and understand your vision to provide personalized guidance. No credit card required.
                   </p>
                 </div>
               </div>
@@ -283,7 +293,7 @@ export default function Home() {
                     </div>
                   </div>
                   <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-                    Our advanced AI analyzes your idea and asks strategic questions to refine your concept, identify opportunities, and uncover potential challenges.
+                    With your Pro subscription, our advanced AI analyzes up to 50 ideas per month and asks strategic questions to refine your concepts, identify opportunities, and uncover potential challenges.
                   </p>
                 </div>
               </div>
@@ -315,7 +325,7 @@ export default function Home() {
                     </div>
                   </div>
                   <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-                    Get a personalized, interactive roadmap that visualizes your path to success with clear milestones, timelines, and actionable steps.
+                    Get unlimited personalized, interactive roadmaps that visualize your path to success with clear milestones, timelines, and actionable steps. Export to Excel/CSV for team collaboration.
                   </p>
                 </div>
               </div>
@@ -347,7 +357,7 @@ export default function Home() {
                     </div>
                   </div>
                   <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
-                    Download your comprehensive business blueprint as a professional PDF report for just $2. Perfect for investors, partners, and team members.
+                    Download up to 20 professional PDF reports per month with your Pro subscription. Each report includes comprehensive business blueprints, market analysis, and financial projections. Perfect for investors, partners, and team members.
                   </p>
                 </div>
               </div>
@@ -419,36 +429,97 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 bg-gray-50">
+      <section id="pricing" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('pricing.title')}</h2>
-          <p className="text-gray-600 mb-8">{t('pricing.subtitle')}</p>
+          <h2 className="text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+            Choose Your Plan
+          </h2>
+          <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
+            Unlock the full potential of your business ideas with our comprehensive monthly subscription
+          </p>
           
-          <Card className="max-w-md mx-auto p-8 bg-white shadow-lg">
-            <div className="text-4xl font-bold text-gray-900 mb-2">$2</div>
-            <div className="text-gray-600 mb-6">One-time payment</div>
-            <ul className="text-left space-y-3 mb-8">
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Complete business analysis
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Personalized roadmap
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Resource recommendations
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-500 mr-2">✓</span>
-                Professional PDF report
-              </li>
-            </ul>
-            <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
-              Start Your Journey
-            </Button>
-          </Card>
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* Free Plan */}
+            <Card className="p-8 bg-white shadow-lg border-2 border-gray-200">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                  Free Trial
+                </h3>
+                <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
+                <div className="text-gray-600">7 days free trial</div>
+              </div>
+              <ul className="text-left space-y-4 mb-8">
+                <li className="flex items-center">
+                  <span className="text-green-500 mr-3">✓</span>
+                  <span>1 idea analysis</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-green-500 mr-3">✓</span>
+                  <span>Basic roadmap</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-green-500 mr-3">✓</span>
+                  <span>1 PDF download</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-green-500 mr-3">✓</span>
+                  <span>Email support</span>
+                </li>
+              </ul>
+              <Button variant="outline" className="w-full">
+                Start Free Trial
+              </Button>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="p-8 bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-2xl border-0 relative">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                <span className="bg-yellow-400 text-yellow-900 px-4 py-1 rounded-full text-sm font-bold">
+                  Most Popular
+                </span>
+              </div>
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Georgia, serif' }}>
+                  Pro Monthly
+                </h3>
+                <div className="text-4xl font-bold mb-2">$20</div>
+                <div className="text-blue-100">per month</div>
+              </div>
+              <ul className="text-left space-y-4 mb-8">
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>50 idea analyses</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>Advanced AI insights</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>20 PDF downloads</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>Priority support</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>Team collaboration</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>Export to Excel/CSV</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="text-yellow-400 mr-3">✓</span>
+                  <span>Advanced analytics</span>
+                </li>
+              </ul>
+              <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 font-bold">
+                Get Started Now
+              </Button>
+            </Card>
+          </div>
         </div>
       </section>
 
