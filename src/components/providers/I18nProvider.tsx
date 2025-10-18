@@ -9,25 +9,22 @@ interface I18nProviderProps {
 }
 
 export function I18nProvider({ children }: I18nProviderProps) {
-  const { i18n } = useTranslation();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  useEffect(() => {
-    if (isClient) {
-      // Set document direction based on language
-      const isRTL = i18n.language === 'ar';
-      document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
-      document.documentElement.lang = i18n.language;
-    }
-  }, [i18n.language, isClient]);
-
   // Prevent hydration mismatch by not rendering until client-side
   if (!isClient) {
-    return <>{children}</>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
+      </div>
+    );
   }
 
   return <>{children}</>;

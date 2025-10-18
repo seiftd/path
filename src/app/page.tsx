@@ -9,7 +9,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ArrowUp, Lightbulb, Shield, Menu, X } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 export default function Home() {
   const { t } = useTranslation();
