@@ -112,12 +112,7 @@ export default function Home() {
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16">
         <div className="text-center max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-8"
-          >
+          <div className="mb-8">
             <Badge variant="secondary" className="mb-4">
               {t('hero.tagline')}
             </Badge>
@@ -127,15 +122,10 @@ export default function Home() {
             <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
               {t('hero.subtitle')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Input Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-2xl mx-auto"
-          >
+          <div className="max-w-2xl mx-auto">
             <Card className="p-6 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <div className="flex items-center space-x-4">
                 <div className="flex-1">
@@ -182,7 +172,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </main>
 
