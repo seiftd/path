@@ -222,6 +222,202 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              How Found Your Path Works
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
+              A simple journey from idea to comprehensive business plan
+            </p>
+          </div>
+
+          <div className="space-y-20">
+            {/* Step 1 */}
+            <div className="flex flex-col lg:flex-row items-center gap-12">
+              <div className="flex-1">
+                <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                  <div className="flex items-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white mr-6">
+                      <span className="text-3xl">💡</span>
+                    </div>
+                    <div>
+                      <span className="text-3xl font-bold text-gray-400">Step 01</span>
+                      <h3 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>
+                        Write Your Idea
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                    Describe your business idea in detail. Our AI will analyze your concept and understand your vision to provide personalized guidance.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-3xl p-10 h-96 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-8xl mb-6">📝</div>
+                    <p className="text-gray-600 text-lg" style={{ fontFamily: 'Georgia, serif' }}>
+                      Idea Input Interface
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex flex-col lg:flex-row-reverse items-center gap-12">
+              <div className="flex-1">
+                <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                  <div className="flex items-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white mr-6">
+                      <span className="text-3xl">🤖</span>
+                    </div>
+                    <div>
+                      <span className="text-3xl font-bold text-gray-400">Step 02</span>
+                      <h3 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>
+                        AI Analysis & Questions
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                    Our advanced AI analyzes your idea and asks strategic questions to refine your concept, identify opportunities, and uncover potential challenges.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl p-10 h-96 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-8xl mb-6">🧠</div>
+                    <p className="text-gray-600 text-lg" style={{ fontFamily: 'Georgia, serif' }}>
+                      AI Analysis Dashboard
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex flex-col lg:flex-row items-center gap-12">
+              <div className="flex-1">
+                <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                  <div className="flex items-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center text-white mr-6">
+                      <span className="text-3xl">🗺️</span>
+                    </div>
+                    <div>
+                      <span className="text-3xl font-bold text-gray-400">Step 03</span>
+                      <h3 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>
+                        Interactive Roadmap
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                    Get a personalized, interactive roadmap that visualizes your path to success with clear milestones, timelines, and actionable steps.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-3xl p-10 h-96 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-8xl mb-6">📊</div>
+                    <p className="text-gray-600 text-lg" style={{ fontFamily: 'Georgia, serif' }}>
+                      Visual Roadmap Interface
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 */}
+            <div className="flex flex-col lg:flex-row-reverse items-center gap-12">
+              <div className="flex-1">
+                <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                  <div className="flex items-center mb-8">
+                    <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center text-white mr-6">
+                      <span className="text-3xl">📄</span>
+                    </div>
+                    <div>
+                      <span className="text-3xl font-bold text-gray-400">Step 04</span>
+                      <h3 className="text-3xl font-bold text-gray-900" style={{ fontFamily: 'Georgia, serif' }}>
+                        Professional Report
+                      </h3>
+                    </div>
+                  </div>
+                  <p className="text-xl text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                    Download your comprehensive business blueprint as a professional PDF report for just $2. Perfect for investors, partners, and team members.
+                  </p>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-3xl p-10 h-96 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-8xl mb-6">📋</div>
+                    <p className="text-gray-600 text-lg" style={{ fontFamily: 'Georgia, serif' }}>
+                      Professional PDF Report
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SaaS Benefits Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6" style={{ fontFamily: 'Georgia, serif' }}>
+              Why Choose Our SaaS Platform?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto" style={{ fontFamily: 'Georgia, serif' }}>
+              Experience the power of AI-driven business planning with our comprehensive SaaS solution
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="p-8 bg-gradient-to-br from-blue-50 to-blue-100 border-0 shadow-lg">
+              <div className="text-center">
+                <div className="text-6xl mb-6">⚡</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                  Instant Analysis
+                </h3>
+                <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                  Get immediate insights and recommendations powered by advanced AI algorithms
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-8 bg-gradient-to-br from-purple-50 to-purple-100 border-0 shadow-lg">
+              <div className="text-center">
+                <div className="text-6xl mb-6">🎯</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                  Personalized Results
+                </h3>
+                <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                  Every roadmap is tailored to your specific industry, market, and business goals
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-8 bg-gradient-to-br from-green-50 to-green-100 border-0 shadow-lg">
+              <div className="text-center">
+                <div className="text-6xl mb-6">📈</div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+                  Scalable Solution
+                </h3>
+                <p className="text-gray-600 leading-relaxed" style={{ fontFamily: 'Georgia, serif' }}>
+                  From startup ideas to enterprise projects, our platform scales with your needs
+                </p>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-16 bg-gray-50">
         <div className="container mx-auto px-4 text-center">
