@@ -9,19 +9,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { ideaId } = await request.json();
+    const { ideaId, plan, amount, currency, description } = await request.json();
 
-    if (!ideaId) {
-      return NextResponse.json({ error: 'Idea ID is required' }, { status: 400 });
+    // Handle different payment types
+    let paymentData;
+    
+    if (plan === 'monthly') {
+      // Monthly subscription
+      paymentData = {
+        amount: amount || 20.00,
+        currency: currency || 'USD',
+        description: description || 'Pro Monthly Subscription - Found Your Path',
+        user_id: userId,
+        plan: 'monthly',
+        recurring: true
+      };
+    } else if (ideaId) {
+      // PDF download payment
+      paymentData = {
+        amount: 2.00,
+        currency: 'USD',
+        description: 'Business Blueprint PDF Download',
+        user_id: userId,
+        idea_id: ideaId,
+      };
+    } else {
+      return NextResponse.json({ error: 'Invalid payment request' }, { status: 400 });
     }
-
-    const paymentData = {
-      amount: 2.00,
-      currency: 'USD',
-      description: 'Business Blueprint PDF Download',
-      user_id: userId,
-      idea_id: ideaId,
-    };
 
     const paymentResult = await createPayment(paymentData);
 

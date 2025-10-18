@@ -466,7 +466,11 @@ export default function Home() {
                   <span>Email support</span>
                 </li>
               </ul>
-              <Button variant="outline" className="w-full">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => router.push('/sign-up')}
+              >
                 Start Free Trial
               </Button>
             </Card>
@@ -515,7 +519,35 @@ export default function Home() {
                   <span>Advanced analytics</span>
                 </li>
               </ul>
-              <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 font-bold">
+              <Button 
+                className="w-full bg-white text-blue-600 hover:bg-gray-100 font-bold"
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/payment/checkout', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        plan: 'monthly',
+                        amount: 20,
+                        currency: 'USD',
+                        description: 'Pro Monthly Subscription - Found Your Path'
+                      })
+                    });
+                    
+                    if (response.ok) {
+                      const data = await response.json();
+                      window.location.href = data.payment_url;
+                    } else {
+                      alert('Payment initialization failed. Please try again.');
+                    }
+                  } catch (error) {
+                    console.error('Payment error:', error);
+                    alert('Payment error. Please try again.');
+                  }
+                }}
+              >
                 Get Started Now
               </Button>
             </Card>
