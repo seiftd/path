@@ -35,7 +35,8 @@ export default function NewIdea() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -43,12 +44,19 @@ export default function NewIdea() {
         setAnalysis(data.analysis);
       } else if (data.error) {
         console.error('API Error:', data.error);
-        // Show user-friendly error message
-        alert('Failed to analyze idea. Please try again.');
+        throw new Error(data.error);
       }
     } catch (error) {
       console.error('Error analyzing idea:', error);
-      alert('Network error. Please check your connection and try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      if (errorMessage.includes('Google AI API key is not configured')) {
+        alert('AI service is not configured. Please contact support or try again later.');
+      } else if (errorMessage.includes('Failed to analyze idea')) {
+        alert('AI analysis failed. Please try again with a different idea.');
+      } else {
+        alert(`Error: ${errorMessage}. Please try again.`);
+      }
     } finally {
       setIsAnalyzing(false);
     }

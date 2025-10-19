@@ -1,8 +1,17 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY!);
+const apiKey = process.env.GOOGLE_AI_API_KEY;
+if (!apiKey) {
+  console.error('GOOGLE_AI_API_KEY is not set in environment variables');
+}
+
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 
 export const analyzeIdea = async (ideaText: string, language: string = 'en') => {
+  if (!genAI) {
+    throw new Error('Google AI API key is not configured');
+  }
+  
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   
   const prompt = `
@@ -44,6 +53,10 @@ export const analyzeIdea = async (ideaText: string, language: string = 'en') => 
 };
 
 export const generateQuestions = async (ideaText: string, category: string, language: string = 'en') => {
+  if (!genAI) {
+    throw new Error('Google AI API key is not configured');
+  }
+  
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   
   const prompt = `
@@ -97,6 +110,10 @@ export const generateQuestions = async (ideaText: string, category: string, lang
 };
 
 export const generatePathContent = async (ideaData: any, language: string = 'en') => {
+  if (!genAI) {
+    throw new Error('Google AI API key is not configured');
+  }
+  
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   
   const prompt = `
