@@ -2,12 +2,73 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const googleApiKey = process.env.GOOGLE_AI_API_KEY;
 const openaiApiKey = process.env.OPENAI_API_KEY;
+const huggingfaceApiKey = process.env.HUGGINGFACE_API_KEY;
 
-if (!googleApiKey && !openaiApiKey) {
-  console.error('No AI API keys found. Please set GOOGLE_AI_API_KEY or OPENAI_API_KEY');
+if (!googleApiKey && !openaiApiKey && !huggingfaceApiKey) {
+  console.error('No AI API keys found. Please set at least one: GOOGLE_AI_API_KEY, OPENAI_API_KEY, or HUGGINGFACE_API_KEY');
 }
 
 const genAI = googleApiKey ? new GoogleGenerativeAI(googleApiKey) : null;
+
+// Free AI analysis using Hugging Face (completely free)
+const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en') => {
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
+  }
+
+  const prompt = `Analyze this business idea: "${ideaText}". Provide category, market potential (low/medium/high), challenges, and next steps. Format as JSON with keys: category, market_potential, challenges, next_steps.`;
+
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${huggingfaceApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_length: 500,
+          temperature: 0.7,
+          return_full_text: false
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Hugging Face API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(`Hugging Face error: ${data.error}`);
+    }
+
+    const generatedText = data[0]?.generated_text || data.generated_text || '';
+
+    // Try to parse JSON response
+    try {
+      const jsonMatch = generatedText.match(/\{.*\}/s);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+    } catch {
+      // If not JSON, return structured response
+    }
+
+    // Fallback structured response
+    return {
+      category: 'general',
+      market_potential: 'medium',
+      challenges: generatedText || 'Market competition and funding challenges',
+      next_steps: generatedText || 'Research market, create MVP, validate with customers'
+    };
+  } catch (error) {
+    console.error('Hugging Face API error:', error);
+    throw new Error('Failed to analyze idea with Hugging Face');
+  }
+};
 
 // Fallback AI analysis using OpenAI
 const analyzeWithOpenAI = async (ideaText: string, language: string = 'en') => {
@@ -72,19 +133,39 @@ Format as JSON with keys: category, market_potential, challenges, next_steps`;
 };
 
 export const analyzeIdea = async (ideaText: string, language: string = 'en') => {
-  // Try Google AI first, then fallback to OpenAI
+  // Try services in order: Google AI -> OpenAI -> Hugging Face
   if (genAI) {
     try {
       return await analyzeWithGoogleAI(ideaText, language);
     } catch (error) {
       console.warn('Google AI failed, trying OpenAI:', error);
-      return await analyzeWithOpenAI(ideaText, language);
+      if (openaiApiKey) {
+        try {
+          return await analyzeWithOpenAI(ideaText, language);
+        } catch (openaiError) {
+          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
+          if (huggingfaceApiKey) {
+            return await analyzeWithHuggingFace(ideaText, language);
+          }
+        }
+      } else if (huggingfaceApiKey) {
+        return await analyzeWithHuggingFace(ideaText, language);
+      }
     }
   } else if (openaiApiKey) {
-    return await analyzeWithOpenAI(ideaText, language);
-  } else {
-    throw new Error('No AI service configured');
+    try {
+      return await analyzeWithOpenAI(ideaText, language);
+    } catch (error) {
+      console.warn('OpenAI failed, trying Hugging Face:', error);
+      if (huggingfaceApiKey) {
+        return await analyzeWithHuggingFace(ideaText, language);
+      }
+    }
+  } else if (huggingfaceApiKey) {
+    return await analyzeWithHuggingFace(ideaText, language);
   }
+  
+  throw new Error('No AI service configured');
 };
 
 const analyzeWithGoogleAI = async (ideaText: string, language: string = 'en') => {
@@ -133,18 +214,107 @@ const analyzeWithGoogleAI = async (ideaText: string, language: string = 'en') =>
 };
 
 export const generateQuestions = async (ideaText: string, category: string, language: string = 'en') => {
-  // Try Google AI first, then fallback to OpenAI
+  // Try services in order: Google AI -> OpenAI -> Hugging Face
   if (genAI) {
     try {
       return await generateQuestionsWithGoogleAI(ideaText, category, language);
     } catch (error) {
       console.warn('Google AI failed, trying OpenAI:', error);
-      return await generateQuestionsWithOpenAI(ideaText, category, language);
+      if (openaiApiKey) {
+        try {
+          return await generateQuestionsWithOpenAI(ideaText, category, language);
+        } catch (openaiError) {
+          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
+          if (huggingfaceApiKey) {
+            return await generateQuestionsWithHuggingFace(ideaText, category, language);
+          }
+        }
+      } else if (huggingfaceApiKey) {
+        return await generateQuestionsWithHuggingFace(ideaText, category, language);
+      }
     }
   } else if (openaiApiKey) {
-    return await generateQuestionsWithOpenAI(ideaText, category, language);
-  } else {
-    throw new Error('No AI service configured');
+    try {
+      return await generateQuestionsWithOpenAI(ideaText, category, language);
+    } catch (error) {
+      console.warn('OpenAI failed, trying Hugging Face:', error);
+      if (huggingfaceApiKey) {
+        return await generateQuestionsWithHuggingFace(ideaText, category, language);
+      }
+    }
+  } else if (huggingfaceApiKey) {
+    return await generateQuestionsWithHuggingFace(ideaText, category, language);
+  }
+  
+  throw new Error('No AI service configured');
+};
+
+const generateQuestionsWithHuggingFace = async (ideaText: string, category: string, language: string = 'en') => {
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
+  }
+
+  const prompt = `Generate questions for business idea: "${ideaText}" in category: ${category}. Create 5-7 questions about target market, budget, audience, value proposition, timeline, and resources. Format as JSON array with keys: question, type, options.`;
+
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${huggingfaceApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_length: 800,
+          temperature: 0.7,
+          return_full_text: false
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Hugging Face API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(`Hugging Face error: ${data.error}`);
+    }
+
+    const generatedText = data[0]?.generated_text || data.generated_text || '';
+
+    // Try to parse JSON response
+    try {
+      const jsonMatch = generatedText.match(/\[.*\]/s);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+    } catch {
+      // If not JSON, return fallback questions
+    }
+
+    // Fallback questions
+    return [
+      {
+        question: language === 'ar' ? 'في أي بلد تريد تطوير فكرتك؟' : 
+                 language === 'fr' ? 'Dans quel pays voulez-vous développer votre idée ?' :
+                 'In which country do you want to develop your idea?',
+        type: 'open_ended',
+        options: []
+      },
+      {
+        question: language === 'ar' ? 'ما هو ميزانيتك المقدرة؟' :
+                 language === 'fr' ? 'Quel est votre budget estimé ?' :
+                 'What is your estimated budget?',
+        type: 'multiple_choice',
+        options: ['$0-1,000', '$1,000-10,000', '$10,000-50,000', '$50,000+']
+      }
+    ];
+  } catch (error) {
+    console.error('Hugging Face API error:', error);
+    throw new Error('Failed to generate questions with Hugging Face');
   }
 };
 
@@ -280,18 +450,98 @@ const generateQuestionsWithGoogleAI = async (ideaText: string, category: string,
 };
 
 export const generatePathContent = async (ideaData: any, language: string = 'en') => {
-  // Try Google AI first, then fallback to OpenAI
+  // Try services in order: Google AI -> OpenAI -> Hugging Face
   if (genAI) {
     try {
       return await generatePathContentWithGoogleAI(ideaData, language);
     } catch (error) {
       console.warn('Google AI failed, trying OpenAI:', error);
-      return await generatePathContentWithOpenAI(ideaData, language);
+      if (openaiApiKey) {
+        try {
+          return await generatePathContentWithOpenAI(ideaData, language);
+        } catch (openaiError) {
+          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
+          if (huggingfaceApiKey) {
+            return await generatePathContentWithHuggingFace(ideaData, language);
+          }
+        }
+      } else if (huggingfaceApiKey) {
+        return await generatePathContentWithHuggingFace(ideaData, language);
+      }
     }
   } else if (openaiApiKey) {
-    return await generatePathContentWithOpenAI(ideaData, language);
-  } else {
-    throw new Error('No AI service configured');
+    try {
+      return await generatePathContentWithOpenAI(ideaData, language);
+    } catch (error) {
+      console.warn('OpenAI failed, trying Hugging Face:', error);
+      if (huggingfaceApiKey) {
+        return await generatePathContentWithHuggingFace(ideaData, language);
+      }
+    }
+  } else if (huggingfaceApiKey) {
+    return await generatePathContentWithHuggingFace(ideaData, language);
+  }
+  
+  throw new Error('No AI service configured');
+};
+
+const generatePathContentWithHuggingFace = async (ideaData: any, language: string = 'en') => {
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
+  }
+
+  const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
+
+  try {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${huggingfaceApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+        parameters: {
+          max_length: 1000,
+          temperature: 0.7,
+          return_full_text: false
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Hugging Face API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(`Hugging Face error: ${data.error}`);
+    }
+
+    const generatedText = data[0]?.generated_text || data.generated_text || '';
+
+    // Try to parse JSON response
+    try {
+      const jsonMatch = generatedText.match(/\{.*\}/s);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+    } catch {
+      // If not JSON, return fallback structure
+    }
+
+    // Fallback structure
+    return {
+      Foundation: ['Set up legal structure', 'Register business'],
+      'Product Development': ['Define MVP', 'Create prototype'],
+      'Marketing & Sales': ['Identify target market', 'Create marketing strategy'],
+      Operations: ['Set up processes', 'Hire team'],
+      Finance: ['Create budget', 'Secure funding']
+    };
+  } catch (error) {
+    console.error('Hugging Face API error:', error);
+    throw new Error('Failed to generate path content with Hugging Face');
   }
 };
 

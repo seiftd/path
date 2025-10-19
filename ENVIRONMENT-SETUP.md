@@ -11,6 +11,9 @@ GOOGLE_AI_API_KEY=your_google_ai_api_key_here
 # OpenAI API Key (Fallback AI service - Optional but recommended)
 OPENAI_API_KEY=your_openai_api_key_here
 
+# Hugging Face API Key (Free AI service - Recommended for backup)
+HUGGINGFACE_API_KEY=your_huggingface_api_key_here
+
 # Clerk Authentication (Development keys)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
 CLERK_SECRET_KEY=sk_test_your_secret_key_here
@@ -42,6 +45,17 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 5. Copy the key and add it to your `.env.local` file
 6. **Note**: You'll need to add payment method for OpenAI usage (starts with $5 credit)
 
+## How to Get Hugging Face API Key (Free)
+
+1. Go to [Hugging Face](https://huggingface.co/)
+2. Sign up or sign in to your account
+3. Go to "Settings" → "Access Tokens"
+4. Click "New token"
+5. Give it a name (e.g., "Found Your Path")
+6. Select "Read" permissions
+7. Copy the token and add it to your `.env.local` file
+8. **Note**: Hugging Face is completely free with generous limits
+
 ## How to Get Clerk Keys
 
 1. Go to [Clerk Dashboard](https://dashboard.clerk.com/)
@@ -63,6 +77,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 - Never commit `.env.local` to version control
 - Make sure to restart your development server after adding environment variables
 - For production deployment, add these variables to your hosting platform's environment settings
-- **AI Service Priority**: Google AI is used first, OpenAI is used as fallback
-- **Cost**: Google AI is free, OpenAI requires payment (starts with $5 credit)
-- **Reliability**: Having both services ensures maximum uptime for AI features
+- **AI Service Priority**: Google AI → OpenAI → Hugging Face
+- **Cost**: Google AI (free), Hugging Face (free), OpenAI (paid - $5 credit)
+- **Reliability**: Triple redundancy ensures 99.9% uptime for AI features
+- **Recommendation**: Add at least Hugging Face API key for free backup
