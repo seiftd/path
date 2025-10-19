@@ -4,7 +4,9 @@ export interface PaymentRequest {
   currency: string;
   description: string;
   user_id: string;
-  idea_id: string;
+  idea_id?: string;
+  plan?: string;
+  recurring?: boolean;
 }
 
 export interface PaymentResponse {
@@ -16,23 +18,35 @@ export interface PaymentResponse {
 
 export const createPayment = async (paymentData: PaymentRequest): Promise<PaymentResponse> => {
   try {
+    const requestBody: any = {
+      amount: paymentData.amount * 100, // Convert to cents
+      currency: paymentData.currency,
+      description: paymentData.description,
+      metadata: {
+        user_id: paymentData.user_id,
+      },
+      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
+    };
+
+    // Add idea_id if it's a PDF download payment
+    if (paymentData.idea_id) {
+      requestBody.metadata.idea_id = paymentData.idea_id;
+    }
+
+    // Add plan and recurring info if it's a subscription
+    if (paymentData.plan && paymentData.recurring) {
+      requestBody.metadata.plan = paymentData.plan;
+      requestBody.metadata.recurring = paymentData.recurring;
+    }
+
     const response = await fetch('https://api.dodopayments.com/v1/payments', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.DODO_PAYMENTS_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        amount: paymentData.amount * 100, // Convert to cents
-        currency: paymentData.currency,
-        description: paymentData.description,
-        metadata: {
-          user_id: paymentData.user_id,
-          idea_id: paymentData.idea_id,
-        },
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success`,
-        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/cancel`,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
