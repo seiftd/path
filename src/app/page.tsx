@@ -142,7 +142,7 @@ export default function Home() {
                           router.push('/sign-in');
                         } else {
                           localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
-                          router.push('/idea/new');
+                          router.push('/subscription/checkout');
                         }
                       }
                     }}
@@ -158,7 +158,7 @@ export default function Home() {
                         router.push('/sign-in');
                       } else {
                         localStorage.setItem('currentIdea', JSON.stringify({ text: ideaInput }));
-                        router.push('/idea/new');
+                        router.push('/subscription/checkout');
                       }
                     }
                   }}
