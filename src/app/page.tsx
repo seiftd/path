@@ -522,29 +522,36 @@ export default function Home() {
               <Button 
                 className="w-full bg-white text-blue-600 hover:bg-gray-100 font-bold"
                 onClick={async () => {
+                  if (!isSignedIn) {
+                    // If not signed in, redirect to sign-up first
+                    router.push('/sign-up');
+                    return;
+                  }
+
                   try {
-                    const response = await fetch('/api/payment/checkout', {
+                    // Create subscription via API
+                    const response = await fetch('/api/subscription/create', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
                       },
                       body: JSON.stringify({
-                        plan: 'monthly',
-                        amount: 20,
-                        currency: 'USD',
-                        description: 'Pro Monthly Subscription - Found Your Path'
+                        customer_email: 'user@example.com', // You can get this from Clerk user data
+                        customer_name: 'User Name' // You can get this from Clerk user data
                       })
                     });
                     
                     if (response.ok) {
                       const data = await response.json();
-                      window.location.href = data.payment_url;
+                      window.location.href = data.checkout_url;
                     } else {
-                      alert('Payment initialization failed. Please try again.');
+                      // Fallback to direct checkout link
+                      window.location.href = 'https://checkout.dodopayments.com/buy/pdt_gETIuWASgloYg0idOZFcE?quantity=1';
                     }
                   } catch (error) {
-                    console.error('Payment error:', error);
-                    alert('Payment error. Please try again.');
+                    console.error('Subscription error:', error);
+                    // Fallback to direct checkout link
+                    window.location.href = 'https://checkout.dodopayments.com/buy/pdt_gETIuWASgloYg0idOZFcE?quantity=1';
                   }
                 }}
               >
