@@ -49,7 +49,7 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
 
     // Try to parse JSON response
     try {
-      const jsonMatch = generatedText.match(/\{.*\}/s);
+      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
@@ -287,7 +287,7 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
 
     // Try to parse JSON response
     try {
-      const jsonMatch = generatedText.match(/\[.*\]/s);
+      const jsonMatch = generatedText.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
@@ -523,7 +523,7 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
 
     // Try to parse JSON response
     try {
-      const jsonMatch = generatedText.match(/\{.*\}/s);
+      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
