@@ -1,14 +1,8 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const googleApiKey = process.env.GOOGLE_AI_API_KEY;
-const openaiApiKey = process.env.OPENAI_API_KEY;
 const huggingfaceApiKey = process.env.HUGGINGFACE_API_KEY;
 
-if (!googleApiKey && !openaiApiKey && !huggingfaceApiKey) {
-  console.error('No AI API keys found. Please set at least one: GOOGLE_AI_API_KEY, OPENAI_API_KEY, or HUGGINGFACE_API_KEY');
+if (!huggingfaceApiKey) {
+  console.error('HUGGINGFACE_API_KEY is not set in environment variables');
 }
-
-const genAI = googleApiKey ? new GoogleGenerativeAI(googleApiKey) : null;
 
 // Free AI analysis using Hugging Face (completely free)
 const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en') => {
@@ -19,7 +13,7 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
   const prompt = `Analyze this business idea: "${ideaText}". Provide category, market potential (low/medium/high), challenges, and next steps. Format as JSON with keys: category, market_potential, challenges, next_steps.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -36,25 +30,32 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
     });
 
     if (!response.ok) {
-      throw new Error(`Hugging Face API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('Hugging Face API error:', response.status, errorText);
+      throw new Error(`Hugging Face API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(`Hugging Face error: ${data.error}`);
+      console.error('Hugging Face model error:', data.error);
+      throw new Error(`Hugging Face model error: ${data.error}`);
     }
 
     const generatedText = data[0]?.generated_text || data.generated_text || '';
+
+    console.log('Hugging Face response:', generatedText);
 
     // Try to parse JSON response
     try {
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const parsed = JSON.parse(jsonMatch[0]);
+        console.log('Parsed JSON:', parsed);
+        return parsed;
       }
-    } catch {
-      // If not JSON, return structured response
+    } catch (parseError) {
+      console.warn('Failed to parse JSON:', parseError);
     }
 
     // Fallback structured response
@@ -133,39 +134,11 @@ Format as JSON with keys: category, market_potential, challenges, next_steps`;
 };
 
 export const analyzeIdea = async (ideaText: string, language: string = 'en') => {
-  // Try services in order: Google AI -> OpenAI -> Hugging Face
-  if (genAI) {
-    try {
-      return await analyzeWithGoogleAI(ideaText, language);
-    } catch (error) {
-      console.warn('Google AI failed, trying OpenAI:', error);
-      if (openaiApiKey) {
-        try {
-          return await analyzeWithOpenAI(ideaText, language);
-        } catch (openaiError) {
-          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
-          if (huggingfaceApiKey) {
-            return await analyzeWithHuggingFace(ideaText, language);
-          }
-        }
-      } else if (huggingfaceApiKey) {
-        return await analyzeWithHuggingFace(ideaText, language);
-      }
-    }
-  } else if (openaiApiKey) {
-    try {
-      return await analyzeWithOpenAI(ideaText, language);
-    } catch (error) {
-      console.warn('OpenAI failed, trying Hugging Face:', error);
-      if (huggingfaceApiKey) {
-        return await analyzeWithHuggingFace(ideaText, language);
-      }
-    }
-  } else if (huggingfaceApiKey) {
-    return await analyzeWithHuggingFace(ideaText, language);
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
   }
   
-  throw new Error('No AI service configured');
+  return await analyzeWithHuggingFace(ideaText, language);
 };
 
 const analyzeWithGoogleAI = async (ideaText: string, language: string = 'en') => {
@@ -214,39 +187,11 @@ const analyzeWithGoogleAI = async (ideaText: string, language: string = 'en') =>
 };
 
 export const generateQuestions = async (ideaText: string, category: string, language: string = 'en') => {
-  // Try services in order: Google AI -> OpenAI -> Hugging Face
-  if (genAI) {
-    try {
-      return await generateQuestionsWithGoogleAI(ideaText, category, language);
-    } catch (error) {
-      console.warn('Google AI failed, trying OpenAI:', error);
-      if (openaiApiKey) {
-        try {
-          return await generateQuestionsWithOpenAI(ideaText, category, language);
-        } catch (openaiError) {
-          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
-          if (huggingfaceApiKey) {
-            return await generateQuestionsWithHuggingFace(ideaText, category, language);
-          }
-        }
-      } else if (huggingfaceApiKey) {
-        return await generateQuestionsWithHuggingFace(ideaText, category, language);
-      }
-    }
-  } else if (openaiApiKey) {
-    try {
-      return await generateQuestionsWithOpenAI(ideaText, category, language);
-    } catch (error) {
-      console.warn('OpenAI failed, trying Hugging Face:', error);
-      if (huggingfaceApiKey) {
-        return await generateQuestionsWithHuggingFace(ideaText, category, language);
-      }
-    }
-  } else if (huggingfaceApiKey) {
-    return await generateQuestionsWithHuggingFace(ideaText, category, language);
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
   }
   
-  throw new Error('No AI service configured');
+  return await generateQuestionsWithHuggingFace(ideaText, category, language);
 };
 
 const generateQuestionsWithHuggingFace = async (ideaText: string, category: string, language: string = 'en') => {
@@ -257,7 +202,7 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
   const prompt = `Generate questions for business idea: "${ideaText}" in category: ${category}. Create 5-7 questions about target market, budget, audience, value proposition, timeline, and resources. Format as JSON array with keys: question, type, options.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -450,39 +395,11 @@ const generateQuestionsWithGoogleAI = async (ideaText: string, category: string,
 };
 
 export const generatePathContent = async (ideaData: any, language: string = 'en') => {
-  // Try services in order: Google AI -> OpenAI -> Hugging Face
-  if (genAI) {
-    try {
-      return await generatePathContentWithGoogleAI(ideaData, language);
-    } catch (error) {
-      console.warn('Google AI failed, trying OpenAI:', error);
-      if (openaiApiKey) {
-        try {
-          return await generatePathContentWithOpenAI(ideaData, language);
-        } catch (openaiError) {
-          console.warn('OpenAI failed, trying Hugging Face:', openaiError);
-          if (huggingfaceApiKey) {
-            return await generatePathContentWithHuggingFace(ideaData, language);
-          }
-        }
-      } else if (huggingfaceApiKey) {
-        return await generatePathContentWithHuggingFace(ideaData, language);
-      }
-    }
-  } else if (openaiApiKey) {
-    try {
-      return await generatePathContentWithOpenAI(ideaData, language);
-    } catch (error) {
-      console.warn('OpenAI failed, trying Hugging Face:', error);
-      if (huggingfaceApiKey) {
-        return await generatePathContentWithHuggingFace(ideaData, language);
-      }
-    }
-  } else if (huggingfaceApiKey) {
-    return await generatePathContentWithHuggingFace(ideaData, language);
+  if (!huggingfaceApiKey) {
+    throw new Error('Hugging Face API key is not configured');
   }
   
-  throw new Error('No AI service configured');
+  return await generatePathContentWithHuggingFace(ideaData, language);
 };
 
 const generatePathContentWithHuggingFace = async (ideaData: any, language: string = 'en') => {
@@ -493,7 +410,7 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
   const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium', {
+    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
