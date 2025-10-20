@@ -13,7 +13,7 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
   const prompt = `Analyze this business idea: "${ideaText}". Provide category, market potential (low/medium/high), challenges, and next steps. Format as JSON with keys: category, market_potential, challenges, next_steps.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -22,9 +22,11 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_length: 500,
-          temperature: 0.7,
-          return_full_text: false
+          max_new_tokens: 256,
+          temperature: 0.7
+        },
+        options: {
+          wait_for_model: true
         }
       }),
     });
@@ -87,7 +89,7 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
   const prompt = `Generate questions for business idea: "${ideaText}" in category: ${category}. Create 5-7 questions about target market, budget, audience, value proposition, timeline, and resources. Format as JSON array with keys: question, type, options.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -96,9 +98,11 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_length: 800,
-          temperature: 0.7,
-          return_full_text: false
+          max_new_tokens: 256,
+          temperature: 0.7
+        },
+        options: {
+          wait_for_model: true
         }
       }),
     });
@@ -164,7 +168,7 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
   const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/microsoft/DialoGPT-large', {
+    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -173,9 +177,11 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
       body: JSON.stringify({
         inputs: prompt,
         parameters: {
-          max_length: 1000,
-          temperature: 0.7,
-          return_full_text: false
+          max_new_tokens: 384,
+          temperature: 0.7
+        },
+        options: {
+          wait_for_model: true
         }
       }),
     });
