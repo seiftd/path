@@ -18,10 +18,11 @@ export async function POST(request: NextRequest) {
     const analysis = await analyzeIdea(ideaText, language || 'en');
 
     return NextResponse.json({ analysis });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing idea:', error);
+    const message = typeof error?.message === 'string' ? error.message : 'Failed to analyze idea';
     return NextResponse.json(
-      { error: 'Failed to analyze idea' },
+      { error: message },
       { status: 500 }
     );
   }
