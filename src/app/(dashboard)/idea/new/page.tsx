@@ -146,9 +146,16 @@ export default function NewIdea() {
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Category</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">Idea Type</h4>
                     <Badge variant="secondary" className="text-sm">
-                      {analysis.category || 'General'}
+                      {analysis.idea_type || analysis.category || 'General'}
+                    </Badge>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Field/Industry</h4>
+                    <Badge variant="outline" className="text-sm">
+                      {analysis.field || 'Technology'}
                     </Badge>
                   </div>
                   
@@ -161,7 +168,27 @@ export default function NewIdea() {
                       {analysis.market_potential || 'Medium'}
                     </Badge>
                   </div>
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Category</h4>
+                    <Badge variant="secondary" className="text-sm">
+                      {analysis.category || 'General'}
+                    </Badge>
+                  </div>
                 </div>
+
+                {(analysis.competitors && analysis.competitors.length > 0) && (
+                  <div className="mt-6">
+                    <h4 className="font-medium text-gray-900 mb-3">Potential Competitors</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {analysis.competitors.map((competitor: string, index: number) => (
+                        <Badge key={index} variant="destructive" className="text-sm">
+                          {competitor}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6">
                   <h4 className="font-medium text-gray-900 mb-2">Key Insights</h4>

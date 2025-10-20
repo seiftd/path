@@ -52,8 +52,37 @@ export default function GeneratePath() {
       const ideaData = JSON.parse(localStorage.getItem('currentIdea') || '{}');
       const answers = JSON.parse(localStorage.getItem('questionAnswers') || '[]');
 
-      // Simulate path generation (in real app, this would call API)
-      setTimeout(() => {
+      // Generate path using AI
+      const response = await fetch('/api/ai/path', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ideaData: {
+            text: ideaData.text,
+            category: ideaData.analysis?.category,
+            idea_type: ideaData.analysis?.idea_type,
+            field: ideaData.analysis?.field
+          },
+          answers,
+          language: 'en'
+        }),
+      });
+
+      if (response.ok) {
+        const pathContent = await response.json();
+        const category = ideaData.analysis?.category || 'general';
+        const mockPathData: PathData = {
+          theme: getThemeFromCategory(category),
+          nodes: generateMockNodes(category, pathContent),
+          title: ideaData.text || 'Your Project Path',
+          description: `Customized path for ${ideaData.analysis?.field || category} project`,
+          category
+        };
+        setPathData(mockPathData);
+      } else {
+        // Fallback to mock data
         const category = ideaData.analysis?.category || 'general';
         const mockPathData: PathData = {
           theme: getThemeFromCategory(category),
@@ -63,8 +92,8 @@ export default function GeneratePath() {
           category
         };
         setPathData(mockPathData);
-        setIsGenerating(false);
-      }, 2000);
+      }
+      setIsGenerating(false);
     } catch (error) {
       console.error('Error generating path:', error);
       setIsGenerating(false);
@@ -81,7 +110,7 @@ export default function GeneratePath() {
     }
   };
 
-  const generateMockNodes = (category: string): PathNode[] => {
+  const generateMockNodes = (category: string, pathContent?: any): PathNode[] => {
     const baseNodes = [
       {
         id: 'foundation',

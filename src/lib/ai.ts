@@ -5,11 +5,38 @@ if (!huggingfaceApiKey) {
 }
 
 function getAnalyzeFallback(ideaText: string) {
+  // Extract basic info from idea text for better fallback
+  const idea = ideaText.toLowerCase();
+  let category = 'general';
+  let field = 'Technology';
+  let competitors = ['Existing solutions in the market'];
+  
+  if (idea.includes('saas') || idea.includes('software')) {
+    category = 'SaaS';
+    field = 'Software as a Service';
+    competitors = ['Salesforce', 'HubSpot', 'Zendesk'];
+  } else if (idea.includes('crypto') || idea.includes('blockchain')) {
+    category = 'FinTech';
+    field = 'Cryptocurrency/Blockchain';
+    competitors = ['Coinbase', 'Binance', 'Kraken'];
+  } else if (idea.includes('ecommerce') || idea.includes('shop')) {
+    category = 'E-commerce';
+    field = 'Online Retail';
+    competitors = ['Amazon', 'Shopify', 'eBay'];
+  } else if (idea.includes('app') || idea.includes('mobile')) {
+    category = 'Mobile App';
+    field = 'Mobile Technology';
+    competitors = ['App Store competitors', 'Google Play competitors'];
+  }
+
   return {
-    category: 'general',
+    category,
+    field,
     market_potential: 'medium',
     challenges: 'Competition, acquisition cost, and time-to-market risks.',
-    next_steps: 'Validate the idea with 5–10 interviews, define MVP, and launch a landing page to collect signups.'
+    next_steps: 'Validate the idea with 5–10 interviews, define MVP, and launch a landing page to collect signups.',
+    competitors,
+    idea_type: category
   };
 }
 
@@ -28,14 +55,43 @@ function getQuestionsFallback(language: string) {
   ];
 }
 
-function getPathFallback() {
-  return {
-    Foundation: ['Choose legal structure', 'Register business', 'Open business bank account'],
-    'Product Development': ['Define MVP scope', 'Build prototype', 'Collect user feedback'],
-    'Marketing & Sales': ['Define ICP', 'Create landing page', 'Run small paid test'],
-    Operations: ['Choose tools (auth, billing)', 'Set support process'],
-    Finance: ['Create basic budget', 'Set pricing hypothesis']
-  };
+function getPathFallback(ideaData?: any) {
+  const category = ideaData?.category || ideaData?.idea_type || 'general';
+  
+  // Customize path based on idea category
+  if (category.toLowerCase().includes('saas')) {
+    return {
+      Foundation: ['Choose legal structure (LLC/Corp)', 'Register domain & trademark', 'Set up business banking'],
+      'Product Development': ['Define MVP features', 'Choose tech stack', 'Build core functionality', 'Implement user authentication'],
+      'Marketing & Sales': ['Define target market', 'Create landing page', 'Set up analytics', 'Launch beta program'],
+      Operations: ['Set up hosting (AWS/Vercel)', 'Implement monitoring', 'Create support system'],
+      Finance: ['Set subscription pricing', 'Integrate payment gateway', 'Create financial projections']
+    };
+  } else if (category.toLowerCase().includes('crypto') || category.toLowerCase().includes('fintech')) {
+    return {
+      Foundation: ['Research regulations', 'Get legal compliance', 'Register with authorities'],
+      'Product Development': ['Design wallet/interface', 'Implement blockchain integration', 'Add security features'],
+      'Marketing & Sales': ['Target crypto community', 'Create educational content', 'Partner with exchanges'],
+      Operations: ['Set up secure infrastructure', 'Implement monitoring', 'Create risk management'],
+      Finance: ['Set transaction fees', 'Create tokenomics', 'Plan funding rounds']
+    };
+  } else if (category.toLowerCase().includes('ecommerce')) {
+    return {
+      Foundation: ['Choose platform (Shopify/WooCommerce)', 'Register business', 'Get tax ID'],
+      'Product Development': ['Source products', 'Set up inventory', 'Design storefront'],
+      'Marketing & Sales': ['SEO optimization', 'Social media strategy', 'Google Ads campaign'],
+      Operations: ['Set up fulfillment', 'Create return policy', 'Customer service'],
+      Finance: ['Set product pricing', 'Calculate margins', 'Plan cash flow']
+    };
+  } else {
+    return {
+      Foundation: ['Choose legal structure', 'Register business', 'Open business bank account'],
+      'Product Development': ['Define MVP scope', 'Build prototype', 'Collect user feedback'],
+      'Marketing & Sales': ['Define ICP', 'Create landing page', 'Run small paid test'],
+      Operations: ['Choose tools (auth, billing)', 'Set support process'],
+      Finance: ['Create basic budget', 'Set pricing hypothesis']
+    };
+  }
 }
 
 // Free AI analysis using Hugging Face (completely free)
@@ -44,7 +100,7 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
     return getAnalyzeFallback(ideaText);
   }
 
-  const prompt = `Analyze this business idea: "${ideaText}". Provide category, market potential (low/medium/high), challenges, and next steps. Format as JSON with keys: category, market_potential, challenges, next_steps.`;
+  const prompt = `Analyze this business idea: "${ideaText}". Provide detailed analysis including: category, field/industry, market potential (low/medium/high), challenges, next steps, potential competitors (3-5 companies), and idea type. Format as JSON with keys: category, field, market_potential, challenges, next_steps, competitors, idea_type.`;
 
   try {
     const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
@@ -163,7 +219,7 @@ export const generateQuestions = async (ideaText: string, category: string, lang
 
 const generatePathContentWithHuggingFace = async (ideaData: any, language: string = 'en') => {
   if (!huggingfaceApiKey) {
-    return getPathFallback();
+    return getPathFallback(ideaData);
   }
 
   const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
@@ -194,25 +250,25 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
     const data = await response.json();
     
     if (data.error) {
-      return getPathFallback();
+    return getPathFallback(ideaData);
+  }
+
+  const generatedText = data[0]?.generated_text || data.generated_text || '';
+
+  // Try to parse JSON response
+  try {
+    const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]);
     }
+  } catch {
+    // If not JSON, return fallback structure
+  }
 
-    const generatedText = data[0]?.generated_text || data.generated_text || '';
-
-    // Try to parse JSON response
-    try {
-      const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-    } catch {
-      // If not JSON, return fallback structure
-    }
-
-    return getPathFallback();
+  return getPathFallback(ideaData);
   } catch (error) {
     console.error('Hugging Face API error:', error);
-    return getPathFallback();
+    return getPathFallback(ideaData);
   }
 };
 
