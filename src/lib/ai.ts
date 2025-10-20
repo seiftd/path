@@ -4,10 +4,44 @@ if (!huggingfaceApiKey) {
   console.error('HUGGINGFACE_API_KEY is not set in environment variables');
 }
 
+function getAnalyzeFallback(ideaText: string) {
+  return {
+    category: 'general',
+    market_potential: 'medium',
+    challenges: 'Competition, acquisition cost, and time-to-market risks.',
+    next_steps: 'Validate the idea with 5–10 interviews, define MVP, and launch a landing page to collect signups.'
+  };
+}
+
+function getQuestionsFallback(language: string) {
+  return [
+    {
+      question: language === 'ar' ? 'من هو عميلك المستهدف؟' : language === 'fr' ? 'Qui est votre client cible ?' : 'Who is your target customer?',
+      type: 'open_ended',
+      options: []
+    },
+    {
+      question: language === 'ar' ? 'ما هي ميزانيتك التقديرية لإطلاق MVP؟' : language === 'fr' ? 'Quel est votre budget estimé pour le MVP ?' : 'What is your estimated budget for the MVP?',
+      type: 'multiple_choice',
+      options: ['$0-1,000', '$1,000-10,000', '$10,000-50,000', '$50,000+']
+    }
+  ];
+}
+
+function getPathFallback() {
+  return {
+    Foundation: ['Choose legal structure', 'Register business', 'Open business bank account'],
+    'Product Development': ['Define MVP scope', 'Build prototype', 'Collect user feedback'],
+    'Marketing & Sales': ['Define ICP', 'Create landing page', 'Run small paid test'],
+    Operations: ['Choose tools (auth, billing)', 'Set support process'],
+    Finance: ['Create basic budget', 'Set pricing hypothesis']
+  };
+}
+
 // Free AI analysis using Hugging Face (completely free)
 const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en') => {
   if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
+    return getAnalyzeFallback(ideaText);
   }
 
   const prompt = `Analyze this business idea: "${ideaText}". Provide category, market potential (low/medium/high), challenges, and next steps. Format as JSON with keys: category, market_potential, challenges, next_steps.`;
@@ -34,56 +68,43 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Hugging Face API error:', response.status, errorText);
-      throw new Error(`Hugging Face API error: ${response.status} - ${errorText}`);
+      return getAnalyzeFallback(ideaText);
     }
 
     const data = await response.json();
     
     if (data.error) {
       console.error('Hugging Face model error:', data.error);
-      throw new Error(`Hugging Face model error: ${data.error}`);
+      return getAnalyzeFallback(ideaText);
     }
 
     const generatedText = data[0]?.generated_text || data.generated_text || '';
-
-    console.log('Hugging Face response:', generatedText);
 
     // Try to parse JSON response
     try {
       const jsonMatch = generatedText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
-        console.log('Parsed JSON:', parsed);
         return parsed;
       }
     } catch (parseError) {
       console.warn('Failed to parse JSON:', parseError);
     }
 
-    // Fallback structured response
-    return {
-      category: 'general',
-      market_potential: 'medium',
-      challenges: generatedText || 'Market competition and funding challenges',
-      next_steps: generatedText || 'Research market, create MVP, validate with customers'
-    };
+    return getAnalyzeFallback(ideaText);
   } catch (error) {
     console.error('Hugging Face API error:', error);
-    throw new Error('Failed to analyze idea with Hugging Face');
+    return getAnalyzeFallback(ideaText);
   }
 };
 
 export const analyzeIdea = async (ideaText: string, language: string = 'en') => {
-  if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
-  }
-  
   return await analyzeWithHuggingFace(ideaText, language);
 };
 
 const generateQuestionsWithHuggingFace = async (ideaText: string, category: string, language: string = 'en') => {
   if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
+    return getQuestionsFallback(language);
   }
 
   const prompt = `Generate questions for business idea: "${ideaText}" in category: ${category}. Create 5-7 questions about target market, budget, audience, value proposition, timeline, and resources. Format as JSON array with keys: question, type, options.`;
@@ -108,13 +129,13 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
     });
 
     if (!response.ok) {
-      throw new Error(`Hugging Face API error: ${response.status}`);
+      return getQuestionsFallback(language);
     }
 
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(`Hugging Face error: ${data.error}`);
+      return getQuestionsFallback(language);
     }
 
     const generatedText = data[0]?.generated_text || data.generated_text || '';
@@ -129,40 +150,20 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
       // If not JSON, return fallback questions
     }
 
-    // Fallback questions
-    return [
-      {
-        question: language === 'ar' ? 'في أي بلد تريد تطوير فكرتك؟' : 
-                 language === 'fr' ? 'Dans quel pays voulez-vous développer votre idée ?' :
-                 'In which country do you want to develop your idea?',
-        type: 'open_ended',
-        options: []
-      },
-      {
-        question: language === 'ar' ? 'ما هو ميزانيتك المقدرة؟' :
-                 language === 'fr' ? 'Quel est votre budget estimé ?' :
-                 'What is your estimated budget?',
-        type: 'multiple_choice',
-        options: ['$0-1,000', '$1,000-10,000', '$10,000-50,000', '$50,000+']
-      }
-    ];
+    return getQuestionsFallback(language);
   } catch (error) {
     console.error('Hugging Face API error:', error);
-    throw new Error('Failed to generate questions with Hugging Face');
+    return getQuestionsFallback(language);
   }
 };
 
 export const generateQuestions = async (ideaText: string, category: string, language: string = 'en') => {
-  if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
-  }
-  
   return await generateQuestionsWithHuggingFace(ideaText, category, language);
 };
 
 const generatePathContentWithHuggingFace = async (ideaData: any, language: string = 'en') => {
   if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
+    return getPathFallback();
   }
 
   const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
@@ -187,13 +188,13 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
     });
 
     if (!response.ok) {
-      throw new Error(`Hugging Face API error: ${response.status}`);
+      return getPathFallback();
     }
 
     const data = await response.json();
     
     if (data.error) {
-      throw new Error(`Hugging Face error: ${data.error}`);
+      return getPathFallback();
     }
 
     const generatedText = data[0]?.generated_text || data.generated_text || '';
@@ -208,24 +209,13 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
       // If not JSON, return fallback structure
     }
 
-    // Fallback structure
-    return {
-      Foundation: ['Set up legal structure', 'Register business'],
-      'Product Development': ['Define MVP', 'Create prototype'],
-      'Marketing & Sales': ['Identify target market', 'Create marketing strategy'],
-      Operations: ['Set up processes', 'Hire team'],
-      Finance: ['Create budget', 'Secure funding']
-    };
+    return getPathFallback();
   } catch (error) {
     console.error('Hugging Face API error:', error);
-    throw new Error('Failed to generate path content with Hugging Face');
+    return getPathFallback();
   }
 };
 
 export const generatePathContent = async (ideaData: any, language: string = 'en') => {
-  if (!huggingfaceApiKey) {
-    throw new Error('Hugging Face API key is not configured');
-  }
-  
   return await generatePathContentWithHuggingFace(ideaData, language);
 };
