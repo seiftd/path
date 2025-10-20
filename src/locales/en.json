@@ -80,15 +80,15 @@
     "subtitle": "Our AI-powered platform guides you through every step of turning your idea into a structured business plan",
     "aiAnalysis": {
       "title": "AI Analysis",
-      "description": "Our AI analyzes your idea and asks intelligent questions to refine your vision"
+      "description": "Our AI analyzes your idea, identifies your business type, competitors, and generates a customized Business Model Canvas through intelligent questions"
     },
     "visualPath": {
       "title": "Visual Path",
-      "description": "Follow your personalized roadmap with interactive visualizations that adapt to your idea"
+      "description": "Follow your personalized roadmap with interactive visualizations that adapt to your specific industry and business model"
     },
     "professionalReport": {
       "title": "Professional Report",
-      "description": "Download your complete business blueprint as a professional PDF for just $2"
+      "description": "Download your complete business blueprint including Business Model Canvas as a professional PDF. Free trial: 1 download. Pro Monthly ($20): 20 downloads + 50 idea analyses"
     }
   },
   "pricing": {

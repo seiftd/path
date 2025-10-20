@@ -11,6 +11,17 @@ export interface PDFData {
     question: string;
     answer: string;
   }>;
+  bmcAnswers?: {
+    customer_segments: string;
+    value_propositions: string;
+    channels: string;
+    customer_relationships: string;
+    revenue_streams: string;
+    key_resources: string;
+    key_activities: string;
+    key_partners: string;
+    cost_structure: string;
+  };
   pathContent: {
     [key: string]: string[];
   };
@@ -77,6 +88,34 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   addText('Your Original Idea', 14, true);
   addText(data.idea.text);
   yPosition += 10;
+
+  // Business Model Canvas section if available
+  if (data.bmcAnswers) {
+    addText('Business Model Canvas', 14, true);
+    yPosition += 5;
+    
+    const bmcSections = [
+      { key: 'customer_segments', title: 'Customer Segments' },
+      { key: 'value_propositions', title: 'Value Propositions' },
+      { key: 'channels', title: 'Channels' },
+      { key: 'customer_relationships', title: 'Customer Relationships' },
+      { key: 'revenue_streams', title: 'Revenue Streams' },
+      { key: 'key_resources', title: 'Key Resources' },
+      { key: 'key_activities', title: 'Key Activities' },
+      { key: 'key_partners', title: 'Key Partners' },
+      { key: 'cost_structure', title: 'Cost Structure' }
+    ];
+    
+    bmcSections.forEach((section) => {
+      const answer = data.bmcAnswers![section.key as keyof typeof data.bmcAnswers];
+      if (answer) {
+        addText(`${section.title}:`, 12, true);
+        addText(`  ${answer}`);
+        yPosition += 5;
+      }
+    });
+    yPosition += 10;
+  }
 
   // Refined Responses
   if (data.responses.length > 0) {

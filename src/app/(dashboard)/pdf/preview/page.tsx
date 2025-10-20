@@ -25,6 +25,7 @@ export default function PDFPreview() {
   const loadPDFData = () => {
     // Load data from localStorage
     const ideaData = JSON.parse(localStorage.getItem('currentIdea') || '{}');
+    const bmcAnswers = JSON.parse(localStorage.getItem('bmcAnswers') || '{}');
     const answers = JSON.parse(localStorage.getItem('questionAnswers') || '[]');
     const completedNodes = JSON.parse(localStorage.getItem('completedNodes') || '[]');
 
@@ -34,6 +35,7 @@ export default function PDFPreview() {
         category: ideaData.analysis?.category || 'Technology',
         created_at: new Date().toISOString()
       },
+      bmcAnswers: Object.keys(bmcAnswers).length > 0 ? bmcAnswers : undefined,
       responses: [
         { question: 'Target Country', answer: 'United States' },
         { question: 'Budget Range', answer: '$10,000-50,000' },
@@ -264,20 +266,24 @@ export default function PDFPreview() {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Download className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Download Your Blueprint</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Download Your Business Blueprint with BMC</h3>
                 <p className="text-gray-600 text-sm">
-                  Get your complete business blueprint as a professional PDF
+                  Get your complete business blueprint including Business Model Canvas as a professional PDF
                 </p>
               </div>
 
               <div className="space-y-4 mb-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">PDF Report</span>
-                  <span className="font-semibold text-gray-900">{t('pdf.price')}</span>
+                  <span className="text-gray-700">Free Trial</span>
+                  <span className="font-semibold text-green-600">1 PDF download included</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Pages</span>
-                  <span className="text-gray-600">~8 pages</span>
+                  <span className="text-gray-700">Pro Monthly</span>
+                  <span className="font-semibold text-blue-600">$20/month - 20 downloads</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700">Includes</span>
+                  <span className="text-gray-600">BMC + Business Plan</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-700">Format</span>

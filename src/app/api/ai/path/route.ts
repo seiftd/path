@@ -12,13 +12,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { ideaData, answers, language } = await request.json();
+    const { ideaData, bmcAnswers, answers, language } = await request.json();
 
     if (!ideaData) {
       return NextResponse.json({ error: 'Idea data is required' }, { status: 400 });
     }
 
-    const pathContent = await generatePathContent(ideaData, language || 'en');
+    // Include BMC answers in the path generation
+    const enhancedIdeaData = {
+      ...ideaData,
+      bmcAnswers
+    };
+
+    const pathContent = await generatePathContent(enhancedIdeaData, language || 'en');
 
     return NextResponse.json(pathContent);
   } catch (error: any) {

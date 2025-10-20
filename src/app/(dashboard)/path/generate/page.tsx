@@ -48,8 +48,9 @@ export default function GeneratePath() {
 
   const generatePath = async () => {
     try {
-      // Get idea and answers from localStorage
+      // Get idea and BMC answers from localStorage
       const ideaData = JSON.parse(localStorage.getItem('currentIdea') || '{}');
+      const bmcAnswers = JSON.parse(localStorage.getItem('bmcAnswers') || '{}');
       const answers = JSON.parse(localStorage.getItem('questionAnswers') || '[]');
 
       // Generate path using AI
@@ -65,6 +66,7 @@ export default function GeneratePath() {
             idea_type: ideaData.analysis?.idea_type,
             field: ideaData.analysis?.field
           },
+          bmcAnswers,
           answers,
           language: 'en'
         }),

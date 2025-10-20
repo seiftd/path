@@ -222,7 +222,15 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
     return getPathFallback(ideaData);
   }
 
-  const prompt = `Create business plan for idea: ${ideaData.idea_text} in category: ${ideaData.category}. Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
+  // Include BMC data in the prompt if available
+  const bmcContext = ideaData.bmcAnswers ? 
+    `\n\nBusiness Model Canvas Context:
+    - Customer Segments: ${ideaData.bmcAnswers.customer_segments || 'Not specified'}
+    - Value Propositions: ${ideaData.bmcAnswers.value_propositions || 'Not specified'}
+    - Channels: ${ideaData.bmcAnswers.channels || 'Not specified'}
+    - Revenue Streams: ${ideaData.bmcAnswers.revenue_streams || 'Not specified'}` : '';
+
+  const prompt = `Create business plan for idea: ${ideaData.idea_text || ideaData.text} in category: ${ideaData.category}.${bmcContext} Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
 
   try {
     const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
