@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeIdea } from '@/lib/ai';
 import { auth } from '@clerk/nextjs/server';
 
+export const preferredRegion = ['pdx1', 'cle1', 'lhr1'];
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
