@@ -93,7 +93,7 @@ export function CircuitPath({ nodes, onNodeClick, completedNodes }: CircuitPathP
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
               transition={{ duration: 1, delay: 1 + index * 0.3 }}
-              d={`M ${connection.x1}% ${connection.y1}% L ${connection.x2}% ${connection.y2}%`}
+              d={`M ${connection.x1} ${connection.y1} L ${connection.x2} ${connection.y2}`}
               stroke={completedNodes.includes(nodes[index - 1]?.id) ? '#10b981' : '#6b7280'}
               strokeWidth="3"
               fill="none"

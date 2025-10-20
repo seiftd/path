@@ -41,13 +41,20 @@ export default function Questions() {
 
   const loadQuestions = async (category: string) => {
     try {
+      // Ensure we have ideaData before making the API call
+      if (!ideaData?.text) {
+        console.warn('No idea data available for questions generation');
+        setQuestions(getFallbackQuestions());
+        return;
+      }
+
       const response = await fetch('/api/ai/questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ideaText: ideaData?.text || '',
+          ideaText: ideaData.text,
           category,
           language: 'en',
         }),
@@ -59,30 +66,31 @@ export default function Questions() {
       }
     } catch (error) {
       console.error('Error loading questions:', error);
-      // Fallback questions
-      setQuestions([
-        {
-          question: 'In which country do you want to develop your idea?',
-          type: 'open_ended',
-        },
-        {
-          question: 'What is your estimated budget?',
-          type: 'multiple_choice',
-          options: ['$0-1,000', '$1,000-10,000', '$10,000-50,000', '$50,000+'],
-        },
-        {
-          question: 'Who is your target audience?',
-          type: 'open_ended',
-        },
-        {
-          question: 'What makes your idea unique?',
-          type: 'open_ended',
-        },
-      ]);
+      setQuestions(getFallbackQuestions());
     } finally {
       setIsLoading(false);
     }
   };
+
+  const getFallbackQuestions = () => [
+    {
+      question: 'In which country do you want to develop your idea?',
+      type: 'open_ended' as const,
+    },
+    {
+      question: 'What is your estimated budget?',
+      type: 'multiple_choice' as const,
+      options: ['$0-1,000', '$1,000-10,000', '$10,000-50,000', '$50,000+'],
+    },
+    {
+      question: 'Who is your target audience?',
+      type: 'open_ended' as const,
+    },
+    {
+      question: 'What makes your idea unique?',
+      type: 'open_ended' as const,
+    },
+  ];
 
   const handleAnswerChange = (answer: string) => {
     setAnswers(prev => ({
