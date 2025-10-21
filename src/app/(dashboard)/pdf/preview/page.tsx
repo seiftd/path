@@ -6,9 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, Eye, CreditCard, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Download, Eye, CreditCard, CheckCircle, BookOpen, Video, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { getResourceRecommendations, getYouTubeChannelRecommendations } from '@/lib/resource-recommendations';
 
 interface UserSubscription {
   plan: 'free' | 'pro';
@@ -95,12 +96,13 @@ export default function PDFPreview() {
           'Monitor cash flow'
         ]
       },
-      resources: [
-        { title: 'Business Planning Course', url: '#', type: 'course' },
-        { title: 'Marketing Strategy Guide', url: '#', type: 'article' },
-        { title: 'Financial Planning Book', url: '#', type: 'book' },
-        { title: 'Project Management Tool', url: '#', type: 'tool' }
-      ],
+      resources: getResourceRecommendations(
+        ideaData.idea_type || ideaData.category || 'general',
+        ideaData.category || 'general'
+      ),
+      youtubeChannels: getYouTubeChannelRecommendations(
+        ideaData.idea_type || ideaData.category || 'general'
+      ),
       user: {
         name: 'John Doe',
         email: 'john@example.com'
@@ -274,15 +276,70 @@ export default function PDFPreview() {
               </div>
 
               {/* Resources */}
-              {pdfData.resources.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Recommended Resources</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
+              {pdfData.resources && pdfData.resources.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
+                    Recommended Learning Resources
+                  </h3>
+                  <div className="space-y-4">
                     {pdfData.resources.map((resource: any, index: number) => (
-                      <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                        <div className="font-medium text-gray-900">{resource.title}</div>
-                        <div className="text-sm text-gray-600 capitalize">{resource.type}</div>
-                      </div>
+                      <a
+                        key={index}
+                        href={resource.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 rounded-lg border border-blue-100 transition-all group"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center mb-1">
+                              <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                {resource.title}
+                              </div>
+                              <Badge variant="secondary" className="ml-2 capitalize">
+                                {resource.type}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-1">{resource.description}</p>
+                            {resource.platform && (
+                              <p className="text-xs text-gray-500">Platform: {resource.platform}</p>
+                            )}
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors ml-2 flex-shrink-0" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* YouTube Channels */}
+              {pdfData.youtubeChannels && pdfData.youtubeChannels.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <Video className="w-5 h-5 mr-2 text-red-600" />
+                    Recommended YouTube Channels
+                  </h3>
+                  <div className="space-y-4">
+                    {pdfData.youtubeChannels.map((channel: any, index: number) => (
+                      <a
+                        key={index}
+                        href={channel.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 bg-gradient-to-r from-red-50 to-pink-50 hover:from-red-100 hover:to-pink-100 rounded-lg border border-red-100 transition-all group"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors mb-1">
+                              {channel.name}
+                            </div>
+                            <p className="text-sm text-gray-600">{channel.description}</p>
+                          </div>
+                          <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors ml-2 flex-shrink-0" />
+                        </div>
+                      </a>
                     ))}
                   </div>
                 </div>
@@ -416,9 +473,9 @@ export default function PDFPreview() {
                   )}
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </div>
   );
