@@ -46,20 +46,39 @@ export default function Dashboard() {
     if (isLoaded && !user) {
       router.push('/sign-in');
     } else if (user) {
-      // Simulate fetching user subscription data
-      // In real app, this would come from your database
-      setTimeout(() => {
-        setSubscription({
-          plan: 'free', // This would be fetched from your database
-          ideasUsed: 0,
-          pdfsDownloaded: 0,
-          ideasLimit: 1,
-          pdfsLimit: 1
-        });
-        setIsLoading(false);
-      }, 1000);
+      // Fetch real subscription data from database
+      fetchSubscription();
     }
   }, [isLoaded, user, router]);
+
+  const fetchSubscription = async () => {
+    try {
+      const response = await fetch('/api/subscription/check');
+      if (response.ok) {
+        const data = await response.json();
+        setSubscription({
+          plan: data.plan,
+          ideasUsed: data.ideas_used || 0,
+          pdfsDownloaded: data.pdfs_used || 0,
+          ideasLimit: data.ideas_limit || 1,
+          pdfsLimit: data.pdfs_limit || 1,
+          expiresAt: data.end_date
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+      // Fallback to free plan
+      setSubscription({
+        plan: 'free',
+        ideasUsed: 0,
+        pdfsDownloaded: 0,
+        ideasLimit: 1,
+        pdfsLimit: 1
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const isPro = subscription.plan === 'pro';
   const ideasRemaining = subscription.ideasLimit - subscription.ideasUsed;
