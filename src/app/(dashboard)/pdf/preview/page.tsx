@@ -10,6 +10,12 @@ import { ArrowLeft, Download, Eye, CreditCard, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+interface UserSubscription {
+  plan: 'free' | 'pro';
+  pdfsDownloaded: number;
+  pdfsLimit: number;
+}
+
 export default function PDFPreview() {
   const { t } = useTranslation();
   const router = useRouter();
@@ -17,10 +23,25 @@ export default function PDFPreview() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [subscription, setSubscription] = useState<UserSubscription>({
+    plan: 'free',
+    pdfsDownloaded: 0,
+    pdfsLimit: 1
+  });
 
   useEffect(() => {
     loadPDFData();
+    loadSubscriptionData();
   }, []);
+
+  const loadSubscriptionData = () => {
+    // Load subscription from localStorage or API
+    // In real app, this would fetch from your database
+    const storedSub = localStorage.getItem('userSubscription');
+    if (storedSub) {
+      setSubscription(JSON.parse(storedSub));
+    }
+  };
 
   const loadPDFData = () => {
     // Load data from localStorage
@@ -89,50 +110,60 @@ export default function PDFPreview() {
     setPdfData(mockPDFData);
   };
 
-  const handleDownload = () => {
-    setShowPayment(true);
-  };
-
-  const handlePayment = async () => {
-    setPaymentProcessing(true);
+  const handleDownload = async () => {
+    // Check if user has available PDFs
+    const pdfsRemaining = subscription.pdfsLimit - subscription.pdfsDownloaded;
     
-    try {
-      // Get current idea ID from localStorage or generate one
-      const ideaData = JSON.parse(localStorage.getItem('currentIdea') || '{}');
-      const ideaId = ideaData.id || `idea_${Date.now()}`;
+    if (pdfsRemaining > 0) {
+      // User has free downloads available
+      await generateAndDownloadPDF();
       
-      // Create payment with Dodo Payments
-      const response = await fetch('/api/payment/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ideaId: ideaId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Payment creation failed: ${response.status}`);
-      }
-
-      const paymentData = await response.json();
+      // Update subscription count
+      const updatedSub = {
+        ...subscription,
+        pdfsDownloaded: subscription.pdfsDownloaded + 1
+      };
+      setSubscription(updatedSub);
+      localStorage.setItem('userSubscription', JSON.stringify(updatedSub));
       
-      if (paymentData.payment_url) {
-        // Redirect to Dodo Payments checkout
-        window.location.href = paymentData.payment_url;
+      alert(`PDF downloaded successfully! You have ${pdfsRemaining - 1} download(s) remaining.`);
+    } else {
+      // No free downloads left, show upgrade prompt
+      if (subscription.plan === 'free') {
+        const upgrade = confirm('You have used your free PDF download. Upgrade to Pro Monthly ($20/month) for 20 PDF downloads. Upgrade now?');
+        if (upgrade) {
+          router.push('/subscription/checkout');
+        }
       } else {
-        throw new Error('No payment URL received');
+        // Pro user who exceeded limit
+        alert('You have reached your monthly PDF download limit. Your limit will reset at the start of next billing cycle.');
       }
-      
-    } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again or contact support.');
-    } finally {
-      setPaymentProcessing(false);
-      setShowPayment(false);
     }
   };
+
+  const generateAndDownloadPDF = async () => {
+    setIsGenerating(true);
+    try {
+      // Generate PDF
+      const pdfBlob = await generatePDF();
+      
+      // Create download link
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `business-blueprint-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
 
   const generatePDF = async () => {
     // In real app, this would call the PDF generation API
@@ -274,12 +305,22 @@ export default function PDFPreview() {
 
               <div className="space-y-4 mb-6">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Free Trial</span>
-                  <span className="font-semibold text-green-600">1 PDF download included</span>
+                  <span className="text-gray-700">Your Plan</span>
+                  <span className={`font-semibold ${subscription.plan === 'pro' ? 'text-blue-600' : 'text-gray-600'}`}>
+                    {subscription.plan === 'pro' ? 'Pro Monthly' : 'Free Trial'}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700">Pro Monthly</span>
-                  <span className="font-semibold text-blue-600">$20/month - 20 downloads</span>
+                  <span className="text-gray-700">Downloads Used</span>
+                  <span className="font-semibold text-gray-900">
+                    {subscription.pdfsDownloaded} / {subscription.pdfsLimit}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700">Remaining</span>
+                  <span className={`font-semibold ${subscription.pdfsLimit - subscription.pdfsDownloaded > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {subscription.pdfsLimit - subscription.pdfsDownloaded} download(s)
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-700">Includes</span>
@@ -291,13 +332,32 @@ export default function PDFPreview() {
                 </div>
               </div>
 
-              <Button
-                onClick={handleDownload}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download PDF
-              </Button>
+              {subscription.pdfsLimit - subscription.pdfsDownloaded > 0 ? (
+                <Button
+                  onClick={handleDownload}
+                  disabled={isGenerating}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Generating PDF...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => router.push('/subscription/checkout')}
+                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                >
+                  Upgrade to Pro - $20/month
+                </Button>
+              )}
 
               <p className="text-xs text-gray-500 text-center mt-4">
                 Secure payment • Instant download • 30-day money-back guarantee
@@ -306,8 +366,8 @@ export default function PDFPreview() {
           </div>
         </div>
 
-        {/* Payment Modal */}
-        {showPayment && (
+        {/* Removed payment modal - using subscription model instead */}
+        {false && showPayment && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -355,18 +415,10 @@ export default function PDFPreview() {
                     </>
                   )}
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowPayment(false)}
-                  className="w-full"
-                  disabled={paymentProcessing}
-                >
-                  Cancel
-                </Button>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
