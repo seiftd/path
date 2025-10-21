@@ -397,13 +397,13 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   pdf.setTextColor(0, 0, 0);
   yPosition += 20;
 
-  const projectType = data.analysis?.idea_type || data.idea.type || data.idea.category;
+  const currentProjectType = data.analysis?.idea_type || data.idea.type || data.idea.category;
   const country = data.idea.country || 'your country';
 
   // General recommendations based on project type
   let recommendations: string[] = [];
   
-  if (projectType.toLowerCase().includes('saas') || projectType.toLowerCase().includes('software')) {
+  if (currentProjectType.toLowerCase().includes('saas') || currentProjectType.toLowerCase().includes('software')) {
     recommendations = [
       'Start with an MVP (Minimum Viable Product) to validate your idea with minimal investment',
       'Focus on user acquisition and retention metrics from day one',
@@ -411,7 +411,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Build a strong technical team with expertise in cloud infrastructure and security',
       'Prioritize scalability in your architecture from the beginning'
     ];
-  } else if (projectType.toLowerCase().includes('ecommerce') || projectType.toLowerCase().includes('retail')) {
+  } else if (currentProjectType.toLowerCase().includes('ecommerce') || currentProjectType.toLowerCase().includes('retail')) {
     recommendations = [
       'Invest in high-quality product photography and detailed descriptions',
       'Optimize your website for mobile devices - over 60% of ecommerce traffic is mobile',
@@ -419,7 +419,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Build trust through customer reviews, secure payment gateways, and clear return policies',
       'Leverage social media marketing and influencer partnerships for brand awareness'
     ];
-  } else if (projectType.toLowerCase().includes('crypto') || projectType.toLowerCase().includes('fintech')) {
+  } else if (currentProjectType.toLowerCase().includes('crypto') || currentProjectType.toLowerCase().includes('fintech')) {
     recommendations = [
       'Prioritize regulatory compliance and obtain necessary licenses in your operating regions',
       'Implement robust security measures including multi-factor authentication and encryption',
@@ -427,7 +427,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Partner with established financial institutions where possible to add credibility',
       'Stay updated with rapidly changing regulations in the crypto/fintech space'
     ];
-  } else if (projectType.toLowerCase().includes('agricultural') || projectType.toLowerCase().includes('زراعي')) {
+  } else if (currentProjectType.toLowerCase().includes('agricultural') || currentProjectType.toLowerCase().includes('زراعي')) {
     recommendations = [
       'Conduct thorough soil and climate analysis for your target region',
       'Explore sustainable and organic farming practices to meet market demand',
@@ -435,7 +435,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Consider vertical integration to control quality and reduce costs',
       'Investigate government subsidies and agricultural development programs'
     ];
-  } else if (projectType.toLowerCase().includes('security') || projectType.toLowerCase().includes('أمني')) {
+  } else if (currentProjectType.toLowerCase().includes('security') || currentProjectType.toLowerCase().includes('أمني')) {
     recommendations = [
       'Ensure all staff undergo thorough background checks and security training',
       'Obtain necessary security licenses and certifications for your region',
@@ -443,7 +443,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Develop comprehensive emergency response protocols',
       'Build strong relationships with local law enforcement agencies'
     ];
-  } else if (projectType.toLowerCase().includes('environment') || projectType.toLowerCase().includes('بيئي')) {
+  } else if (currentProjectType.toLowerCase().includes('environment') || currentProjectType.toLowerCase().includes('بيئي')) {
     recommendations = [
       'Align your project with UN Sustainable Development Goals (SDGs)',
       'Seek certifications like ISO 14001 for environmental management',
