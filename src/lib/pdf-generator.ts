@@ -356,7 +356,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   }
 
   // Refined Responses
-  if (data.responses.length > 0) {
+  if (data.responses && data.responses.length > 0) {
     addText('Refined Information', 14, true);
     data.responses.forEach((response, index) => {
       addText(`${index + 1}. ${response.question}`, 12, true);
@@ -367,18 +367,20 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   }
 
   // Business Plan
-  addText('Your Business Plan', 14, true);
-  Object.entries(data.pathContent).forEach(([category, steps]) => {
-    addText(category, 12, true);
-    steps.forEach((step, index) => {
-      addText(`  ${index + 1}. ${step}`);
+  if (data.pathContent && Object.keys(data.pathContent).length > 0) {
+    addText('Your Business Plan', 14, true);
+    Object.entries(data.pathContent).forEach(([category, steps]) => {
+      addText(category, 12, true);
+      steps.forEach((step, index) => {
+        addText(`  ${index + 1}. ${step}`);
+      });
+      yPosition += 5;
     });
-    yPosition += 5;
-  });
-  yPosition += 10;
+    yPosition += 10;
+  }
 
   // Resources
-  if (data.resources.length > 0) {
+  if (data.resources && data.resources.length > 0) {
     if (yPosition > pageHeight - 80) {
       pdf.addPage();
       yPosition = 20;
