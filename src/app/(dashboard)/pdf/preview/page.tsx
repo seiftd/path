@@ -266,9 +266,9 @@ export default function PDFPreview() {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
                   <Download className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Download Your Business Blueprint with BMC</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Your Business Blueprint with BMC</h3>
                 <p className="text-gray-600 text-sm">
-                  Get your complete business blueprint including Business Model Canvas as a professional PDF
+                  Complete business blueprint including Business Model Canvas as a professional PDF
                 </p>
               </div>
 
