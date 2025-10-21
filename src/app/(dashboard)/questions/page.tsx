@@ -78,7 +78,7 @@ export default function Questions() {
     if (currentSection) {
       setAnswers(prev => ({
         ...prev,
-        [currentSection.id]: answer
+        [currentSection.id as keyof BMCAnswers]: answer
       }));
     }
   };
@@ -109,7 +109,7 @@ export default function Questions() {
   };
 
   const currentSection = bmcSections[currentQuestionIndex];
-  const currentAnswer = currentSection ? answers[currentSection.id] || '' : '';
+  const currentAnswer = currentSection ? answers[currentSection.id as keyof BMCAnswers] || '' : '';
 
   if (isLoading) {
     return (
