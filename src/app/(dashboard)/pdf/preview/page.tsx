@@ -6,8 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Download, Eye, CreditCard, CheckCircle, BookOpen, Video, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ArrowLeft, Download, Eye, CheckCircle, BookOpen, Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { getResourceRecommendations, getYouTubeChannelRecommendations } from '@/lib/resource-recommendations';
 
@@ -22,8 +21,6 @@ export default function PDFPreview() {
   const router = useRouter();
   const [pdfData, setPdfData] = useState<any>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [subscription, setSubscription] = useState<UserSubscription>({
     plan: 'free',
     pdfsDownloaded: 0,
@@ -423,59 +420,6 @@ export default function PDFPreview() {
           </div>
         </div>
 
-        {/* Removed payment modal - using subscription model instead */}
-        {false && showPayment && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-lg p-8 max-w-md w-full"
-            >
-              <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CreditCard className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Complete Your Purchase</h3>
-                <p className="text-gray-600">Get your business blueprint for just $2</p>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-                  <span className="font-medium">Business Blueprint PDF</span>
-                  <span className="font-semibold">$2.00</span>
-                </div>
-                <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Total</span>
-                  <span>$2.00</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Button
-                  onClick={handlePayment}
-                  disabled={paymentProcessing}
-                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-                >
-                  {paymentProcessing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      Pay $2.00
-                    </>
-                  )}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
       </div>
     </div>
   );
