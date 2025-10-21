@@ -7,36 +7,104 @@ if (!huggingfaceApiKey) {
 function getAnalyzeFallback(ideaText: string) {
   // Extract basic info from idea text for better fallback
   const idea = ideaText.toLowerCase();
-  let category = 'general';
-  let field = 'Technology';
-  let competitors = ['Existing solutions in the market'];
+  let category = 'General Business';
+  let field = 'General';
+  let competitors: string[] = [];
+  let idea_type = 'General';
   
-  if (idea.includes('saas') || idea.includes('software')) {
-    category = 'SaaS';
+  // SaaS/Software
+  if (idea.includes('saas') || idea.includes('software') || idea.includes('platform')) {
+    category = 'SaaS/Software';
     field = 'Software as a Service';
-    competitors = ['Salesforce', 'HubSpot', 'Zendesk'];
-  } else if (idea.includes('crypto') || idea.includes('blockchain')) {
-    category = 'FinTech';
-    field = 'Cryptocurrency/Blockchain';
-    competitors = ['Coinbase', 'Binance', 'Kraken'];
-  } else if (idea.includes('ecommerce') || idea.includes('shop')) {
+    idea_type = 'SaaS Platform';
+    competitors = ['Salesforce', 'HubSpot', 'Zendesk', 'Monday.com'];
+  } 
+  // Crypto/Blockchain
+  else if (idea.includes('crypto') || idea.includes('blockchain') || idea.includes('bitcoin') || idea.includes('nft')) {
+    category = 'FinTech/Crypto';
+    field = 'Cryptocurrency & Blockchain';
+    idea_type = 'Blockchain Solution';
+    competitors = ['Coinbase', 'Binance', 'MetaMask', 'Kraken'];
+  } 
+  // E-commerce
+  else if (idea.includes('ecommerce') || idea.includes('shop') || idea.includes('store') || idea.includes('متجر')) {
     category = 'E-commerce';
     field = 'Online Retail';
-    competitors = ['Amazon', 'Shopify', 'eBay'];
-  } else if (idea.includes('app') || idea.includes('mobile')) {
-    category = 'Mobile App';
+    idea_type = 'E-commerce Platform';
+    competitors = ['Amazon', 'Shopify stores', 'Noon', 'Jumia'];
+  } 
+  // Agriculture
+  else if (idea.includes('farm') || idea.includes('agriculture') || idea.includes('زراع') || idea.includes('مزرعة')) {
+    category = 'Agriculture';
+    field = 'Agricultural Technology';
+    idea_type = 'Agricultural Project';
+    competitors = ['Local farms', 'AgriTech startups', 'Cooperative farms'];
+  }
+  // Food & Beverage
+  else if (idea.includes('food') || idea.includes('restaurant') || idea.includes('cafe') || idea.includes('مطعم') || idea.includes('أطعمة')) {
+    category = 'Food & Beverage';
+    field = 'Food Service Industry';
+    idea_type = 'Food Business';
+    competitors = ['Local restaurants', 'Food chains', 'Delivery platforms'];
+  }
+  // Healthcare
+  else if (idea.includes('health') || idea.includes('medical') || idea.includes('clinic') || idea.includes('صح')) {
+    category = 'Healthcare';
+    field = 'Healthcare Services';
+    idea_type = 'Healthcare Solution';
+    competitors = ['Local clinics', 'Telemedicine platforms', 'Healthcare providers'];
+  }
+  // Education
+  else if (idea.includes('education') || idea.includes('learning') || idea.includes('course') || idea.includes('تعليم')) {
+    category = 'Education';
+    field = 'Educational Technology';
+    idea_type = 'EdTech Platform';
+    competitors = ['Coursera', 'Udemy', 'Khan Academy', 'Local institutions'];
+  }
+  // Real Estate
+  else if (idea.includes('real estate') || idea.includes('property') || idea.includes('عقار')) {
+    category = 'Real Estate';
+    field = 'Property & Real Estate';
+    idea_type = 'Real Estate Business';
+    competitors = ['Local agencies', 'Property portals', 'Real estate platforms'];
+  }
+  // Mobile App
+  else if (idea.includes('app') || idea.includes('mobile') || idea.includes('تطبيق')) {
+    category = 'Mobile Application';
     field = 'Mobile Technology';
-    competitors = ['App Store competitors', 'Google Play competitors'];
+    idea_type = 'Mobile App';
+    competitors = ['Similar apps on App Store', 'Similar apps on Google Play'];
+  }
+  // Marketing/Advertising
+  else if (idea.includes('marketing') || idea.includes('advertising') || idea.includes('تسويق')) {
+    category = 'Marketing';
+    field = 'Digital Marketing';
+    idea_type = 'Marketing Agency';
+    competitors = ['Digital agencies', 'Freelance marketers', 'Marketing platforms'];
+  }
+  // Security
+  else if (idea.includes('security') || idea.includes('protection') || idea.includes('أمن')) {
+    category = 'Security';
+    field = 'Security Services';
+    idea_type = 'Security Solution';
+    competitors = ['Security companies', 'Cybersecurity firms', 'Local security services'];
+  }
+  // Environmental
+  else if (idea.includes('environment') || idea.includes('sustainability') || idea.includes('green') || idea.includes('بيئ')) {
+    category = 'Environmental';
+    field = 'Environmental Services';
+    idea_type = 'Sustainability Project';
+    competitors = ['Environmental NGOs', 'Green startups', 'Sustainability initiatives'];
   }
 
   return {
     category,
     field,
     market_potential: 'medium',
-    challenges: 'Competition, acquisition cost, and time-to-market risks.',
-    next_steps: 'Validate the idea with 5–10 interviews, define MVP, and launch a landing page to collect signups.',
-    competitors,
-    idea_type: category
+    challenges: 'Market competition, customer acquisition, operational complexity, regulatory requirements.',
+    next_steps: 'Conduct market research, validate with potential customers, create MVP, test with beta users.',
+    competitors: competitors.length > 0 ? competitors : ['Existing market solutions'],
+    idea_type
   };
 }
 

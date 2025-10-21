@@ -15,6 +15,11 @@ export default function NewIdea() {
   const { t } = useTranslation();
   const router = useRouter();
   const [ideaText, setIdeaText] = useState('');
+  const [projectName, setProjectName] = useState('');
+  const [country, setCountry] = useState('');
+  const [founderName, setFounderName] = useState('');
+  const [email, setEmail] = useState('');
+  const [teamMembers, setTeamMembers] = useState<string[]>(['']);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
 
@@ -64,13 +69,37 @@ export default function NewIdea() {
 
   const handleContinue = () => {
     // Store idea in localStorage or state management
+    const teamMembersFiltered = teamMembers.filter(member => member.trim() !== '');
+    
     localStorage.setItem('currentIdea', JSON.stringify({
       text: ideaText,
+      name: projectName,
+      country: country,
+      founderName: founderName,
+      email: email,
+      founders: teamMembersFiltered.length > 0 ? teamMembersFiltered : [founderName],
       analysis,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      category: analysis?.category || 'General',
+      idea_type: analysis?.idea_type || 'General',
+      field: analysis?.field || 'General'
     }));
     
     router.push('/questions');
+  };
+
+  const addTeamMember = () => {
+    setTeamMembers([...teamMembers, '']);
+  };
+
+  const updateTeamMember = (index: number, value: string) => {
+    const updated = [...teamMembers];
+    updated[index] = value;
+    setTeamMembers(updated);
+  };
+
+  const removeTeamMember = (index: number) => {
+    setTeamMembers(teamMembers.filter((_, i) => i !== index));
   };
 
   return (
@@ -92,9 +121,118 @@ export default function NewIdea() {
 
         <div className="max-w-4xl mx-auto">
           <Card className="p-8 shadow-lg">
+            {/* Project Information */}
+            <div className="space-y-6 mb-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Project Information</h2>
+              
+              {/* Project Name */}
+              <div>
+                <label htmlFor="projectName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Project Name *
+                </label>
+                <input
+                  id="projectName"
+                  type="text"
+                  placeholder="e.g., Smart Farm Solutions"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnalyzing}
+                />
+              </div>
+
+              {/* Founder Name */}
+              <div>
+                <label htmlFor="founderName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Your Name *
+                </label>
+                <input
+                  id="founderName"
+                  type="text"
+                  placeholder="Your full name"
+                  value={founderName}
+                  onChange={(e) => setFounderName(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnalyzing}
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="your.email@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnalyzing}
+                />
+              </div>
+
+              {/* Country */}
+              <div>
+                <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                  Country *
+                </label>
+                <input
+                  id="country"
+                  type="text"
+                  placeholder="e.g., Egypt, UAE, Saudi Arabia"
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  disabled={isAnalyzing}
+                />
+              </div>
+
+              {/* Team Members */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Team Members (Optional)
+                </label>
+                {teamMembers.map((member, index) => (
+                  <div key={index} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder={`Team member ${index + 1}`}
+                      value={member}
+                      onChange={(e) => updateTeamMember(index, e.target.value)}
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      disabled={isAnalyzing}
+                    />
+                    {teamMembers.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => removeTeamMember(index)}
+                        disabled={isAnalyzing}
+                        className="px-3"
+                      >
+                        ×
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={addTeamMember}
+                  disabled={isAnalyzing}
+                  className="mt-2"
+                >
+                  + Add Team Member
+                </Button>
+              </div>
+            </div>
+
+            {/* Business Idea */}
             <div className="mb-6">
               <label htmlFor="idea" className="block text-sm font-medium text-gray-700 mb-2">
-                Your Business Idea
+                Your Business Idea *
               </label>
               <Textarea
                 id="idea"
@@ -115,7 +253,7 @@ export default function NewIdea() {
               </div>
               <Button
                 onClick={handleSubmit}
-                disabled={!ideaText.trim() || isAnalyzing}
+                disabled={!ideaText.trim() || !projectName.trim() || !founderName.trim() || !email.trim() || !country.trim() || isAnalyzing}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 {isAnalyzing ? (
