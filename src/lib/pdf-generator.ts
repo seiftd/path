@@ -5,36 +5,36 @@ export interface PDFData {
   idea: {
     text: string;
     category: string;
-    created_at: string;
+    created_at?: string;
     name?: string;
     type?: string;
     country?: string;
-    founders?: string[];
+    founders?: string | string[];
   };
-  responses: Array<{
+  responses?: Array<{
     question: string;
     answer: string;
   }>;
   bmcAnswers?: {
-    customer_segments: string;
-    value_propositions: string;
-    channels: string;
-    customer_relationships: string;
-    revenue_streams: string;
-    key_resources: string;
-    key_activities: string;
-    key_partners: string;
-    cost_structure: string;
+    customer_segments?: string;
+    value_propositions?: string;
+    channels?: string;
+    customer_relationships?: string;
+    revenue_streams?: string;
+    key_resources?: string;
+    key_activities?: string;
+    key_partners?: string;
+    cost_structure?: string;
   };
-  pathContent: {
+  pathContent?: {
     [key: string]: string[];
   };
-  resources: Array<{
+  resources?: Array<{
     title: string;
     url: string;
     type: string;
   }>;
-  user: {
+  user?: {
     name: string;
     email: string;
   };

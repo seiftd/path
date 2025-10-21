@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Download, Eye, CheckCircle, BookOpen, Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { getResourceRecommendations, getYouTubeChannelRecommendations } from '@/lib/resource-recommendations';
+import { generatePDF as generatePDFDocument } from '@/lib/pdf-generator';
 
 interface UserSubscription {
   plan: 'free' | 'pro';
@@ -165,25 +166,45 @@ export default function PDFPreview() {
 
 
   const generatePDF = async () => {
-    // In real app, this would call the PDF generation API
-    const sections = Object
-      .entries(pdfData.pathContent as Record<string, string[]>)
-      .map(([category, steps]) => `${category}:\n${steps.map((step) => `- ${step}`).join('\n')}`)
-      .join('\n\n');
+    try {
+      // Get BMC answers from localStorage
+      const bmcAnswers = JSON.parse(localStorage.getItem('bmcAnswers') || '{}');
+      
+      // Prepare PDF data
+      const pdfDataForGeneration = {
+        idea: {
+          name: pdfData.idea?.name || 'My Business Idea',
+          text: pdfData.idea?.text || 'No description provided',
+          category: pdfData.idea?.category || 'General',
+          type: pdfData.idea?.idea_type || pdfData.idea?.type || 'General Business',
+          country: pdfData.idea?.country || 'Not specified',
+          founders: pdfData.idea?.founders || []
+        },
+        pathContent: pdfData.pathContent || {},
+        responses: pdfData.responses || [],
+        bmcAnswers: bmcAnswers,
+        analysis: {
+          idea_type: pdfData.analysis?.idea_type || pdfData.idea?.type || 'General',
+          field: pdfData.analysis?.field || pdfData.idea?.category || 'General',
+          competitors: pdfData.analysis?.competitors || []
+        }
+      };
 
-    const mockPDFContent = `
-      Business Blueprint Report
-      Generated for: ${pdfData.user.name}
-      Date: ${new Date().toLocaleDateString()}
+      console.log('Generating PDF with data:', pdfDataForGeneration);
+
+      // Generate PDF using pdf-generator
+      const pdfBlob = await generatePDFDocument(pdfDataForGeneration);
       
-      Original Idea:
-      ${pdfData.idea.text}
+      if (!pdfBlob || pdfBlob.size === 0) {
+        throw new Error('Generated PDF is empty');
+      }
       
-      Business Plan:
-      ${sections}
-    `;
-    
-    return new Blob([mockPDFContent], { type: 'application/pdf' });
+      return pdfBlob;
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('Failed to generate PDF. Please check console for details.');
+      throw error;
+    }
   };
 
   if (!pdfData) {
