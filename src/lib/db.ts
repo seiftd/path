@@ -35,6 +35,17 @@ export const testConnection = async () => {
 
 export default pool;
 
+// Generic query function for SQL operations
+export const query = async (sql: string, params?: any[]) => {
+  const connection = await pool.getConnection();
+  try {
+    const [rows] = await connection.execute(sql, params);
+    return rows as any[];
+  } finally {
+    connection.release();
+  }
+};
+
 // Database schema creation
 export const createTables = async () => {
   const connection = await pool.getConnection();
