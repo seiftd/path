@@ -188,65 +188,99 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     pdf.setTextColor(0, 0, 0);
     yPosition += 20;
 
-    // Draw BMC Table
+    // Draw BMC Table with Data
     const tableStartY = yPosition;
     const cellWidth = (pageWidth - 40) / 5;
     const cellHeight = 35;
+    const contentFontSize = 7;
+    const titleFontSize = 8;
+
+    // Helper function to add text in cell with word wrap
+    const addCellText = (text: string, x: number, y: number, width: number, maxLines: number = 4) => {
+      pdf.setFontSize(contentFontSize);
+      pdf.setFont('helvetica', 'normal');
+      const lines = pdf.splitTextToSize(text || 'Not specified', width - 4);
+      const linesToShow = lines.slice(0, maxLines);
+      linesToShow.forEach((line: string, index: number) => {
+        if (y + 10 + (index * 3) < y + cellHeight - 2) {
+          pdf.text(line, x, y + 10 + (index * 3));
+        }
+      });
+    };
 
     // Row 1
+    let currentY = yPosition;
+    
     // Key Partners
-    pdf.rect(20, yPosition, cellWidth, cellHeight);
-    pdf.setFontSize(8);
+    pdf.rect(20, currentY, cellWidth, cellHeight);
+    pdf.setFontSize(titleFontSize);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('5. Key Partnerships', 22, yPosition + 5);
+    pdf.text('Key Partners', 22, currentY + 5);
+    addCellText(data.bmcAnswers?.key_partners || '', 22, currentY, cellWidth);
     
     // Key Activities  
-    pdf.rect(20 + cellWidth, yPosition, cellWidth, cellHeight);
-    pdf.text('6. Key Activities', 22 + cellWidth, yPosition + 5);
+    pdf.rect(20 + cellWidth, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Key Activities', 22 + cellWidth, currentY + 5);
+    addCellText(data.bmcAnswers?.key_activities || '', 22 + cellWidth, currentY, cellWidth);
     
     // Value Proposition
-    pdf.rect(20 + cellWidth * 2, yPosition, cellWidth, cellHeight);
-    pdf.text('1. Value Proposition', 22 + cellWidth * 2, yPosition + 5);
+    pdf.rect(20 + cellWidth * 2, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Value Propositions', 22 + cellWidth * 2, currentY + 5);
+    addCellText(data.bmcAnswers?.value_propositions || '', 22 + cellWidth * 2, currentY, cellWidth);
     
     // Customer Relationships
-    pdf.rect(20 + cellWidth * 3, yPosition, cellWidth, cellHeight);
-    pdf.text('3. Customer', 22 + cellWidth * 3, yPosition + 5);
-    pdf.text('   Relationships', 22 + cellWidth * 3, yPosition + 8);
+    pdf.rect(20 + cellWidth * 3, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Customer', 22 + cellWidth * 3, currentY + 5);
+    pdf.text('Relationships', 22 + cellWidth * 3, currentY + 8);
+    addCellText(data.bmcAnswers?.customer_relationships || '', 22 + cellWidth * 3, currentY, cellWidth);
     
     // Customer Segments
-    pdf.rect(20 + cellWidth * 4, yPosition, cellWidth, cellHeight);
-    pdf.text('2. Customer', 22 + cellWidth * 4, yPosition + 5);
-    pdf.text('   Segments', 22 + cellWidth * 4, yPosition + 8);
+    pdf.rect(20 + cellWidth * 4, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Customer', 22 + cellWidth * 4, currentY + 5);
+    pdf.text('Segments', 22 + cellWidth * 4, currentY + 8);
+    addCellText(data.bmcAnswers?.customer_segments || '', 22 + cellWidth * 4, currentY, cellWidth);
 
     // Row 2
-    yPosition += cellHeight;
+    currentY += cellHeight;
     
-    // Key Resources (spans Key Partners & Key Activities columns)
-    pdf.rect(20, yPosition, cellWidth, cellHeight);
-    pdf.text('7. Key Resources', 22, yPosition + 5);
+    // Key Resources
+    pdf.rect(20, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Key Resources', 22, currentY + 5);
+    addCellText(data.bmcAnswers?.key_resources || '', 22, currentY, cellWidth);
     
-    // Empty cell
-    pdf.rect(20 + cellWidth, yPosition, cellWidth, cellHeight);
+    // Empty cell under Key Activities
+    pdf.rect(20 + cellWidth, currentY, cellWidth, cellHeight);
     
-    // Channels (spans Customer Relationships & Customer Segments)
-    pdf.rect(20 + cellWidth * 2, yPosition, cellWidth, cellHeight);
-    pdf.text('4. Distribution', 22 + cellWidth * 2, yPosition + 5);
-    pdf.text('   Channels', 22 + cellWidth * 2, yPosition + 8);
+    // Channels
+    pdf.rect(20 + cellWidth * 2, currentY, cellWidth, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Channels', 22 + cellWidth * 2, currentY + 5);
+    addCellText(data.bmcAnswers?.channels || '', 22 + cellWidth * 2, currentY, cellWidth);
     
-    pdf.rect(20 + cellWidth * 3, yPosition, cellWidth * 2, cellHeight);
+    // Empty cells (spans 2 columns)
+    pdf.rect(20 + cellWidth * 3, currentY, cellWidth * 2, cellHeight);
 
     // Row 3
-    yPosition += cellHeight;
+    currentY += cellHeight;
     
     // Cost Structure
-    pdf.rect(20, yPosition, cellWidth * 2.5, cellHeight);
-    pdf.text('8. Cost Structure', 22, yPosition + 5);
+    pdf.rect(20, currentY, cellWidth * 2.5, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Cost Structure', 22, currentY + 5);
+    addCellText(data.bmcAnswers?.cost_structure || '', 22, currentY, cellWidth * 2.5);
     
     // Revenue Streams
-    pdf.rect(20 + cellWidth * 2.5, yPosition, cellWidth * 2.5, cellHeight);
-    pdf.text('9. Revenue Streams', 22 + cellWidth * 2.5, yPosition + 5);
+    pdf.rect(20 + cellWidth * 2.5, currentY, cellWidth * 2.5, cellHeight);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Revenue Streams', 22 + cellWidth * 2.5, currentY + 5);
+    addCellText(data.bmcAnswers?.revenue_streams || '', 22 + cellWidth * 2.5, currentY, cellWidth * 2.5);
 
-    yPosition += cellHeight + 15;
+    yPosition = currentY + cellHeight + 15;
 
     // Detailed BMC Sections
     pdf.addPage();
@@ -258,6 +292,69 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     pdf.setFont('helvetica', 'bold');
     pdf.text('BUSINESS MODEL CANVAS - DETAILED ANALYSIS', pageWidth / 2, yPosition + 2, { align: 'center' });
     yPosition += 15;
+
+    // Get project context
+    const projectType = data.analysis?.idea_type || data.idea.type || 'General';
+    const country = data.idea.country || 'your country';
+    
+    // Generate context-aware BMC sections
+    const getBMCAnalysis = (key: string, answer: string) => {
+      const analyses: Record<string, string> = {};
+      
+      // Value Propositions
+      if (key === 'value_propositions') {
+        if (projectType.includes('Agric')) {
+          analyses['analysis'] = `For agricultural projects in ${country}, focus on: sustainable practices, local food security, organic certification opportunities, and export potential. Consider partnerships with agricultural cooperatives and government agricultural programs.`;
+        } else if (projectType.includes('SaaS') || projectType.includes('Software')) {
+          analyses['analysis'] = `For SaaS products, emphasize: scalability, recurring revenue potential, cloud infrastructure, and competitive differentiation. Consider freemium models and strategic partnerships with tech platforms.`;
+        } else if (projectType.includes('Food')) {
+          analyses['analysis'] = `For food businesses in ${country}, highlight: quality ingredients, hygiene standards, delivery options, and local taste preferences. Consider food safety regulations and halal certification if applicable.`;
+        } else {
+          analyses['analysis'] = `Focus on what makes your solution unique in ${country}'s market. Consider local regulations, cultural preferences, and competitive advantages.`;
+        }
+      }
+      
+      // Customer Segments
+      else if (key === 'customer_segments') {
+        analyses['analysis'] = `In ${country}, consider: purchasing power, demographic trends, urban vs rural distribution, and digital adoption rates. Tailor your offerings to local economic conditions and cultural preferences.`;
+      }
+      
+      // Channels
+      else if (key === 'channels') {
+        analyses['analysis'] = `Popular channels in ${country} may include: social media (Facebook, Instagram, TikTok), WhatsApp Business, local e-commerce platforms, and traditional retail. Consider mobile-first strategies as smartphone penetration increases.`;
+      }
+      
+      // Key Partners
+      else if (key === 'key_partners') {
+        if (country.toLowerCase().includes('egypt') || country.toLowerCase().includes('مصر')) {
+          analyses['analysis'] = `In Egypt, consider: local suppliers for cost efficiency, partnerships with industrial zones (10th of Ramadan, 6th of October), government support programs (ITIDA, SFD), and logistics providers like Aramex or Bosta.`;
+        } else if (country.toLowerCase().includes('uae') || country.toLowerCase().includes('emirates') || country.toLowerCase().includes('الإمارات')) {
+          analyses['analysis'] = `In UAE, leverage: free zones benefits, Dubai SME support, partnerships with innovation hubs (Dubai Future Foundation), and regional logistics infrastructure.`;
+        } else if (country.toLowerCase().includes('saudi') || country.toLowerCase().includes('السعودية')) {
+          analyses['analysis'] = `In Saudi Arabia, explore: Vision 2030 initiatives, Monsha'at SME Authority support, partnerships with accelerators (Badir, KAUST), and local manufacturing incentives.`;
+        } else {
+          analyses['analysis'] = `Identify strategic partnerships with local suppliers, distributors, technology providers, and industry associations in ${country}. Consider government support programs for SMEs.`;
+        }
+      }
+      
+      // Cost Structure
+      else if (key === 'cost_structure') {
+        analyses['analysis'] = `Key cost considerations in ${country}: labor costs, rent/facilities, raw materials, marketing, licenses/permits, and utilities. Plan for seasonal variations and currency fluctuations. Consider tax incentives for startups.`;
+      }
+      
+      // Revenue Streams
+      else if (key === 'revenue_streams') {
+        if (projectType.includes('SaaS')) {
+          analyses['analysis'] = `SaaS revenue models: monthly/annual subscriptions, tiered pricing, usage-based fees, enterprise licenses. Consider local payment methods (cash on delivery, Fawry, mada) and regional pricing strategies.`;
+        } else if (projectType.includes('E-commerce')) {
+          analyses['analysis'] = `E-commerce revenue: direct sales, marketplace commissions, premium memberships, affiliate marketing. Accept popular payment methods in ${country} including mobile wallets and cash on delivery.`;
+        } else {
+          analyses['analysis'] = `Diversify revenue streams: product sales, service fees, licensing, partnerships. Consider payment preferences in ${country} and offer flexible payment terms to increase adoption.`;
+        }
+      }
+      
+      return analyses['analysis'] || `Based on your answer and ${country}'s market conditions, ensure this aligns with local regulations, customer preferences, and competitive landscape.`;
+    };
 
     const bmcSections = [
       { 
@@ -339,6 +436,10 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
         pdf.setFontSize(10);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(0, 0, 0);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Your Answer:', 22, yPosition);
+        yPosition += 5;
+        pdf.setFont('helvetica', 'normal');
         const answerLines = pdf.splitTextToSize(answer, pageWidth - 44);
         answerLines.forEach((line: string) => {
           if (yPosition > pageHeight - 20) {
@@ -348,7 +449,31 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
           pdf.text(line, 22, yPosition);
           yPosition += 5;
         });
-        yPosition += 8;
+        yPosition += 5;
+
+        // Context-aware analysis
+        const analysis = getBMCAnalysis(section.key, answer);
+        pdf.setFillColor(250, 250, 220);
+        pdf.rect(20, yPosition, pageWidth - 40, 3, 'F');
+        yPosition += 5;
+        pdf.setFontSize(9);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(120, 80, 20);
+        pdf.text('💡 Strategic Insights:', 22, yPosition);
+        yPosition += 5;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(60, 60, 60);
+        const analysisLines = pdf.splitTextToSize(analysis, pageWidth - 44);
+        analysisLines.forEach((line: string) => {
+          if (yPosition > pageHeight - 20) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          pdf.text(line, 22, yPosition);
+          yPosition += 4;
+        });
+        pdf.setTextColor(0, 0, 0);
+        yPosition += 10;
       }
     });
     
@@ -462,6 +587,46 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       'Explore green financing options and environmental grants',
       'Build partnerships with environmental NGOs and government agencies',
       'Measure and report your environmental impact regularly'
+    ];
+  } else if (currentProjectType.toLowerCase().includes('food') || currentProjectType.toLowerCase().includes('مطعم') || currentProjectType.toLowerCase().includes('restaurant')) {
+    recommendations = [
+      `In ${country}, ensure compliance with food safety regulations and health department requirements`,
+      'Focus on consistent quality, hygiene, and customer service to build reputation',
+      'Develop a strong brand identity that resonates with your target demographic',
+      'Leverage food delivery platforms and social media for marketing',
+      'Create unique menu items that differentiate you from competitors'
+    ];
+  } else if (currentProjectType.toLowerCase().includes('health') || currentProjectType.toLowerCase().includes('medical') || currentProjectType.toLowerCase().includes('صح')) {
+    recommendations = [
+      'Obtain all necessary medical licenses and certifications',
+      'Prioritize patient privacy and data security (HIPAA compliance if applicable)',
+      'Build a qualified team of healthcare professionals',
+      'Invest in modern medical equipment and technology',
+      'Develop strong relationships with insurance providers and hospitals'
+    ];
+  } else if (currentProjectType.toLowerCase().includes('education') || currentProjectType.toLowerCase().includes('edtech') || currentProjectType.toLowerCase().includes('تعليم')) {
+    recommendations = [
+      'Design engaging, interactive learning experiences that cater to different learning styles',
+      'Obtain necessary educational accreditations and certifications',
+      'Leverage technology for scalability (LMS, video platforms, mobile apps)',
+      'Build a strong instructor/content creator network',
+      'Focus on measurable learning outcomes and student success metrics'
+    ];
+  } else if (currentProjectType.toLowerCase().includes('real estate') || currentProjectType.toLowerCase().includes('عقار') || currentProjectType.toLowerCase().includes('property')) {
+    recommendations = [
+      `Understand ${country}'s real estate laws, property rights, and foreign ownership restrictions`,
+      'Build strong relationships with developers, brokers, and legal advisors',
+      'Leverage technology for property listings, virtual tours, and transaction management',
+      'Focus on high-growth areas with strong infrastructure development',
+      'Diversify your portfolio across different property types and locations'
+    ];
+  } else if (currentProjectType.toLowerCase().includes('mobile') || currentProjectType.toLowerCase().includes('app') || currentProjectType.toLowerCase().includes('تطبيق')) {
+    recommendations = [
+      'Design for both iOS and Android from the start, or choose one based on market share',
+      'Focus on exceptional user experience (UX) and intuitive interface design',
+      'Implement robust analytics to track user behavior and optimize features',
+      'Plan your monetization strategy early (ads, in-app purchases, subscriptions)',
+      'Invest in app store optimization (ASO) to improve discoverability'
     ];
   } else {
     recommendations = [
