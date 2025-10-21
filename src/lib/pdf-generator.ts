@@ -141,22 +141,32 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   }
 
   // Founders
-  if (data.idea.founders && data.idea.founders.length > 0) {
+  if (data.idea.founders) {
     pdf.setFont('helvetica', 'bold');
     pdf.text('Founding Team: ', 20, yPosition);
     yPosition += 6;
     pdf.setFont('helvetica', 'normal');
-    data.idea.founders.forEach((founder, index) => {
-      pdf.text(`  ${index + 1}. ${founder}`, 25, yPosition);
-      yPosition += 6;
-    });
-    yPosition += 3;
+    
+    // Handle both string and array types
+    const founders = Array.isArray(data.idea.founders) 
+      ? data.idea.founders 
+      : [data.idea.founders];
+    
+    if (founders.length > 0 && founders[0]) {
+      founders.forEach((founder, index) => {
+        pdf.text(`  ${index + 1}. ${founder}`, 25, yPosition);
+        yPosition += 6;
+      });
+      yPosition += 3;
+    }
   }
 
   // Generation Info
   pdf.setFontSize(10);
   pdf.setTextColor(100, 100, 100);
-  pdf.text(`Generated for: ${data.user.name} | Date: ${new Date(data.idea.created_at).toLocaleDateString()}`, 20, yPosition);
+  const userName = data.user?.name || 'User';
+  const generatedDate = data.idea.created_at ? new Date(data.idea.created_at).toLocaleDateString() : new Date().toLocaleDateString();
+  pdf.text(`Generated for: ${userName} | Date: ${generatedDate}`, 20, yPosition);
   pdf.setTextColor(0, 0, 0);
   yPosition += 15;
 
