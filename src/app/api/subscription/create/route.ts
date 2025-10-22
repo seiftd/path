@@ -10,6 +10,9 @@ export async function POST(request: NextRequest) {
 
     const { customer_email, customer_name } = await request.json();
 
+    // Get the base URL for redirects
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://yourpath.vercel.app';
+
     // Create subscription using Dodo Payments API
     const dodoResponse = await fetch('https://api.dodopayments.com/v1/subscriptions', {
       method: 'POST',
@@ -23,10 +26,13 @@ export async function POST(request: NextRequest) {
         quantity: 1,
         customer_email: customer_email,
         customer_name: customer_name,
+        success_url: `${baseUrl}/payment/success`,
+        cancel_url: `${baseUrl}/#pricing`,
         metadata: {
           clerk_user_id: userId,
           plan: 'monthly',
-          source: 'foundyourpath.com'
+          source: 'foundyourpath.com',
+          customer_email: customer_email
         }
       })
     });

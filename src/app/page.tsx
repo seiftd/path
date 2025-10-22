@@ -39,7 +39,15 @@ export default function Home() {
             </a>
             <LanguageSwitcher />
             {isSignedIn ? (
-              <UserButton afterSignOutUrl="/" />
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant="outline"
+                  onClick={() => router.push('/dashboard')}
+                >
+                  Dashboard
+                </Button>
+                <UserButton afterSignOutUrl="/" />
+              </div>
             ) : (
               <div className="flex items-center space-x-3">
                 <SignInButton>
@@ -88,8 +96,20 @@ export default function Home() {
               <LanguageSwitcher />
             </div>
             {isSignedIn ? (
-              <div className="py-2">
-                <UserButton afterSignOutUrl="/" />
+              <div className="flex flex-col space-y-3 py-2">
+                <Button 
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    router.push('/dashboard');
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Dashboard
+                </Button>
+                <div className="py-2">
+                  <UserButton afterSignOutUrl="/" />
+                </div>
               </div>
             ) : (
               <div className="flex flex-col space-y-3 py-2">
