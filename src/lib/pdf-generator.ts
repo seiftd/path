@@ -82,9 +82,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   const isHealth = projectType.toLowerCase().includes('health') || projectType.toLowerCase().includes('medical');
   
   // Color schemes based on project type
-  let primaryColor = [41, 128, 185]; // Default blue
-  let secondaryColor = [52, 152, 219];
-  let accentColor = [46, 204, 113];
+  let primaryColor: [number, number, number] = [41, 128, 185]; // Default blue
+  let secondaryColor: [number, number, number] = [52, 152, 219];
+  let accentColor: [number, number, number] = [46, 204, 113];
   
   if (isAgricultural) {
     primaryColor = [39, 174, 96]; // Green
@@ -109,11 +109,11 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   }
 
   // Gradient header
-  pdf.setFillColor(...primaryColor);
+  pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   pdf.rect(0, 0, pageWidth, 80, 'F');
   
   // Accent stripe
-  pdf.setFillColor(...accentColor);
+  pdf.setFillColor(accentColor[0], accentColor[1], accentColor[2]);
   pdf.rect(0, 75, pageWidth, 5, 'F');
   
   // Logo/Brand area
@@ -138,13 +138,13 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
   // Project name card
   pdf.setFillColor(250, 250, 250);
   pdf.rect(20, yPosition, pageWidth - 40, 50, 'F');
-  pdf.setFillColor(...secondaryColor);
+  pdf.setFillColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
   pdf.rect(20, yPosition, 5, 50, 'F'); // Left accent bar
   
   yPosition += 15;
   pdf.setFontSize(22);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...primaryColor);
+  pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   const projectName = data.idea.name || data.idea.text?.substring(0, 60) + '...';
   pdf.text(projectName, 30, yPosition);
   
