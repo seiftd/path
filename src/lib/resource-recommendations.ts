@@ -322,6 +322,36 @@ export const getYouTubeChannelRecommendations = (
     ];
   }
 
+  if (type.includes('agricultural') || type.includes('farm') || type.includes('زراع')) {
+    return [
+      {
+        name: 'No-Till Growers',
+        url: 'https://www.youtube.com/@notillgrowers',
+        description: 'Modern sustainable farming techniques'
+      },
+      {
+        name: 'Richard Perkins',
+        url: 'https://www.youtube.com/@richardperkins',
+        description: 'Regenerative agriculture and profitable farming'
+      }
+    ];
+  }
+
+  if (type.includes('food') || type.includes('restaurant') || type.includes('مطعم')) {
+    return [
+      {
+        name: 'Restaurant Influencers',
+        url: 'https://www.youtube.com/@restaurantinfluencers',
+        description: 'Restaurant business strategies and success stories'
+      },
+      {
+        name: 'Toast',
+        url: 'https://www.youtube.com/@ToastTab',
+        description: 'Restaurant technology and operations tips'
+      }
+    ];
+  }
+
   if (type.includes('marketing')) {
     return [
       {

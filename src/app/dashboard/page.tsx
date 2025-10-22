@@ -30,6 +30,14 @@ interface UserSubscription {
   expiresAt?: string;
 }
 
+interface UserIdea {
+  id: string;
+  text: string;
+  category: string;
+  idea_type: string;
+  created_at: string;
+}
+
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -40,6 +48,7 @@ export default function Dashboard() {
     ideasLimit: 1,
     pdfsLimit: 1
   });
+  const [userIdeas, setUserIdeas] = useState<UserIdea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -48,6 +57,7 @@ export default function Dashboard() {
     } else if (user) {
       // Fetch real subscription data from database
       fetchSubscription();
+      fetchUserIdeas();
     }
   }, [isLoaded, user, router]);
 
@@ -77,6 +87,19 @@ export default function Dashboard() {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchUserIdeas = async () => {
+    try {
+      const response = await fetch('/api/ideas/user');
+      if (response.ok) {
+        const data = await response.json();
+        setUserIdeas(data.ideas || []);
+      }
+    } catch (error) {
+      console.error('Error fetching user ideas:', error);
+      setUserIdeas([]);
     }
   };
 
@@ -293,6 +316,66 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* Recent Projects */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+            Your Projects
+          </h2>
+          {userIdeas.length > 0 ? (
+            <div className="grid gap-4">
+              {userIdeas.map((idea) => (
+                <Card key={idea.id} className="p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline">{idea.category}</Badge>
+                        <Badge variant="secondary">{idea.idea_type}</Badge>
+                      </div>
+                      <p className="text-gray-900 font-medium mb-2">{idea.text}</p>
+                      <p className="text-sm text-gray-500">
+                        Created {new Date(idea.created_at).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        })}
+                      </p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Store idea in localStorage and navigate to path
+                        localStorage.setItem('currentIdea', JSON.stringify({
+                          id: idea.id,
+                          text: idea.text,
+                          analysis: {
+                            category: idea.category,
+                            idea_type: idea.idea_type
+                          }
+                        }));
+                        router.push('/path/generate');
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="p-8 text-center">
+              <Lightbulb className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600 mb-4">
+                No projects yet. Start by analyzing your first business idea!
+              </p>
+              <Button onClick={() => router.push('/idea/new')}>
+                <Plus className="w-4 h-4 mr-2" />
+                Analyze New Idea
+              </Button>
+            </Card>
+          )}
+        </div>
+
         {/* Upgrade Prompt for Free Users */}
         {!isPro && (
           <Card className="p-8 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
@@ -310,7 +393,7 @@ export default function Dashboard() {
                 className="bg-gradient-to-r from-blue-600 to-purple-600"
                 onClick={() => router.push('/subscription/checkout')}
               >
-                Upgrade to Pro - $17/month
+                Upgrade to Pro - $20/month
               </Button>
             </div>
           </Card>

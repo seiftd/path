@@ -217,7 +217,7 @@ const analyzeWithHuggingFace = async (ideaText: string, language: string = 'en')
   const prompt = `Analyze this business idea: "${ideaText}". Provide detailed analysis including: category, field/industry, market potential (low/medium/high), challenges, next steps, potential competitors (3-5 companies), and idea type. Format as JSON with keys: category, field, market_potential, challenges, next_steps, competitors, idea_type.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
+    const response = await fetch('https://router.huggingface.co/hf-inference/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -280,7 +280,7 @@ const generateQuestionsWithHuggingFace = async (ideaText: string, category: stri
   const prompt = `Generate questions for business idea: "${ideaText}" in category: ${category}. Create 5-7 questions about target market, budget, audience, value proposition, timeline, and resources. Format as JSON array with keys: question, type, options.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
+    const response = await fetch('https://router.huggingface.co/hf-inference/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
@@ -347,7 +347,7 @@ const generatePathContentWithHuggingFace = async (ideaData: any, language: strin
   const prompt = `Create business plan for idea: ${ideaData.idea_text || ideaData.text} in category: ${ideaData.category}.${bmcContext} Generate steps for Foundation, Product Development, Marketing & Sales, Operations, Finance. Format as JSON with categories as keys and arrays of steps as values.`;
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/google/flan-t5-base', {
+    const response = await fetch('https://router.huggingface.co/hf-inference/models/google/flan-t5-base', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${huggingfaceApiKey}`,
