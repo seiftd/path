@@ -124,10 +124,30 @@ function getQuestionsFallback(language: string) {
 }
 
 function getPathFallback(ideaData?: any) {
-  const category = ideaData?.category || ideaData?.idea_type || 'general';
+  const category = (ideaData?.category || ideaData?.idea_type || 'general').toLowerCase();
   
-  // Customize path based on idea category
-  if (category.toLowerCase().includes('saas')) {
+  // Agriculture / Farm projects
+  if (category.includes('agricult') || category.includes('farm') || category.includes('زراع') || category.includes('مزرعة')) {
+    return {
+      Foundation: ['Study soil & climate', 'Get agricultural licenses', 'Secure land/lease', 'Register farming business'],
+      'Product Development': ['Choose crops/livestock', 'Plan irrigation system', 'Setup infrastructure', 'Create farming schedule'],
+      'Marketing & Sales': ['Find buyers (markets/cooperatives)', 'Build distribution', 'Brand products', 'Explore exports'],
+      Operations: ['Hire farm workers', 'Daily operations', 'Sustainable practices', 'Quality control'],
+      Finance: ['Calculate costs', 'Apply for grants/loans', 'Equipment budget', 'Seasonal cash flow']
+    };
+  }
+  // Food & Restaurant
+  else if (category.includes('food') || category.includes('restaurant') || category.includes('مطعم')) {
+    return {
+      Foundation: ['Food safety licenses', 'Find location', 'Kitchen layout', 'Register food business'],
+      'Product Development': ['Create menu', 'Source ingredients', 'Hire chef', 'Test recipes'],
+      'Marketing & Sales': ['Local presence', 'Delivery apps partnership', 'Social media', 'Loyalty programs'],
+      Operations: ['Staff training', 'Hygiene protocols', 'Inventory', 'Customer service'],
+      Finance: ['Food costs', 'Menu pricing', 'Cash flow', 'Daily revenue tracking']
+    };
+  }
+  // SaaS / Software
+  else if (category.includes('saas') || category.includes('software')) {
     return {
       Foundation: ['Choose legal structure (LLC/Corp)', 'Register domain & trademark', 'Set up business banking'],
       'Product Development': ['Define MVP features', 'Choose tech stack', 'Build core functionality', 'Implement user authentication'],
@@ -135,7 +155,9 @@ function getPathFallback(ideaData?: any) {
       Operations: ['Set up hosting (AWS/Vercel)', 'Implement monitoring', 'Create support system'],
       Finance: ['Set subscription pricing', 'Integrate payment gateway', 'Create financial projections']
     };
-  } else if (category.toLowerCase().includes('crypto') || category.toLowerCase().includes('fintech')) {
+  }
+  // Crypto / FinTech
+  else if (category.includes('crypto') || category.includes('fintech') || category.includes('blockchain')) {
     return {
       Foundation: ['Research regulations', 'Get legal compliance', 'Register with authorities'],
       'Product Development': ['Design wallet/interface', 'Implement blockchain integration', 'Add security features'],
@@ -143,7 +165,9 @@ function getPathFallback(ideaData?: any) {
       Operations: ['Set up secure infrastructure', 'Implement monitoring', 'Create risk management'],
       Finance: ['Set transaction fees', 'Create tokenomics', 'Plan funding rounds']
     };
-  } else if (category.toLowerCase().includes('ecommerce')) {
+  }
+  // E-commerce
+  else if (category.includes('ecommerce') || category.includes('shop') || category.includes('store')) {
     return {
       Foundation: ['Choose platform (Shopify/WooCommerce)', 'Register business', 'Get tax ID'],
       'Product Development': ['Source products', 'Set up inventory', 'Design storefront'],
@@ -151,7 +175,29 @@ function getPathFallback(ideaData?: any) {
       Operations: ['Set up fulfillment', 'Create return policy', 'Customer service'],
       Finance: ['Set product pricing', 'Calculate margins', 'Plan cash flow']
     };
-  } else {
+  }
+  // Healthcare
+  else if (category.includes('health') || category.includes('medical') || category.includes('clinic')) {
+    return {
+      Foundation: ['Medical licenses', 'Find facility', 'Register healthcare business', 'Get insurance'],
+      'Product Development': ['Setup equipment', 'Hire medical staff', 'Service protocols'],
+      'Marketing & Sales': ['Build doctor network', 'Patient referrals', 'Local advertising'],
+      Operations: ['Patient management', 'Medical records', 'Staff scheduling'],
+      Finance: ['Insurance billing', 'Service pricing', 'Equipment financing']
+    };
+  }
+  // Education
+  else if (category.includes('educat') || category.includes('learning') || category.includes('course')) {
+    return {
+      Foundation: ['Educational accreditation', 'Register institution', 'Find location/platform'],
+      'Product Development': ['Curriculum development', 'Hire instructors', 'Learning materials'],
+      'Marketing & Sales': ['Student enrollment', 'Partner with schools', 'Referral programs'],
+      Operations: ['Class scheduling', 'Student support', 'Learning management'],
+      Finance: ['Tuition pricing', 'Scholarships', 'Operating budget']
+    };
+  }
+  // Generic fallback
+  else {
     return {
       Foundation: ['Choose legal structure', 'Register business', 'Open business bank account'],
       'Product Development': ['Define MVP scope', 'Build prototype', 'Collect user feedback'],

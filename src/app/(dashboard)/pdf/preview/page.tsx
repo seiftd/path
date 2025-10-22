@@ -33,12 +33,33 @@ export default function PDFPreview() {
     loadSubscriptionData();
   }, []);
 
-  const loadSubscriptionData = () => {
-    // Load subscription from localStorage or API
-    // In real app, this would fetch from your database
-    const storedSub = localStorage.getItem('userSubscription');
-    if (storedSub) {
-      setSubscription(JSON.parse(storedSub));
+  const loadSubscriptionData = async () => {
+    try {
+      // Fetch real subscription data from API
+      const response = await fetch('/api/subscription/check');
+      if (response.ok) {
+        const data = await response.json();
+        setSubscription({
+          plan: data.plan || 'free',
+          pdfsDownloaded: data.pdfs_used || 0,
+          pdfsLimit: data.pdfs_limit || 1
+        });
+      } else {
+        // Fallback to free plan if API fails
+        setSubscription({
+          plan: 'free',
+          pdfsDownloaded: 0,
+          pdfsLimit: 1
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load subscription:', error);
+      // Fallback to free plan
+      setSubscription({
+        plan: 'free',
+        pdfsDownloaded: 0,
+        pdfsLimit: 1
+      });
     }
   };
 
@@ -118,15 +139,25 @@ export default function PDFPreview() {
       // User has free downloads available
       await generateAndDownloadPDF();
       
-      // Update subscription count
+      // Update subscription count in database
+      try {
+        await fetch('/api/subscription/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'use_pdf' })
+        });
+      } catch (error) {
+        console.error('Failed to update PDF count:', error);
+      }
+      
+      // Update local state
       const updatedSub = {
         ...subscription,
         pdfsDownloaded: subscription.pdfsDownloaded + 1
       };
       setSubscription(updatedSub);
-      localStorage.setItem('userSubscription', JSON.stringify(updatedSub));
       
-      alert(`PDF downloaded successfully! You have ${pdfsRemaining - 1} download(s) remaining.`);
+      alert(`✅ PDF downloaded successfully! You have ${pdfsRemaining - 1} download(s) remaining.`);
     } else {
       // No free downloads left, show upgrade prompt
       if (subscription.plan === 'free') {
