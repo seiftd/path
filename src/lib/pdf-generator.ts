@@ -72,19 +72,96 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     yPosition += 10;
   };
 
-  // Header
-  pdf.setFillColor(41, 128, 185);
-  pdf.rect(0, 0, pageWidth, 35, 'F');
+  // ===== BEAUTIFUL FIRST PAGE =====
+  // Determine project type colors
+  const projectType = data.analysis?.idea_type || data.idea.type || 'General';
+  const isAgricultural = projectType.toLowerCase().includes('agric') || projectType.toLowerCase().includes('farm');
+  const isFood = projectType.toLowerCase().includes('food') || projectType.toLowerCase().includes('restaurant');
+  const isSaaS = projectType.toLowerCase().includes('saas') || projectType.toLowerCase().includes('software');
+  const isEcommerce = projectType.toLowerCase().includes('ecommerce') || projectType.toLowerCase().includes('store');
+  const isHealth = projectType.toLowerCase().includes('health') || projectType.toLowerCase().includes('medical');
+  
+  // Color schemes based on project type
+  let primaryColor = [41, 128, 185]; // Default blue
+  let secondaryColor = [52, 152, 219];
+  let accentColor = [46, 204, 113];
+  
+  if (isAgricultural) {
+    primaryColor = [39, 174, 96]; // Green
+    secondaryColor = [46, 204, 113];
+    accentColor = [241, 196, 15]; // Yellow
+  } else if (isFood) {
+    primaryColor = [231, 76, 60]; // Red
+    secondaryColor = [230, 126, 34]; // Orange
+    accentColor = [241, 196, 15]; // Yellow
+  } else if (isSaaS) {
+    primaryColor = [52, 73, 94]; // Dark blue-gray
+    secondaryColor = [155, 89, 182]; // Purple
+    accentColor = [52, 152, 219]; // Light blue
+  } else if (isEcommerce) {
+    primaryColor = [155, 89, 182]; // Purple
+    secondaryColor = [142, 68, 173];
+    accentColor = [241, 196, 15]; // Yellow
+  } else if (isHealth) {
+    primaryColor = [26, 188, 156]; // Teal
+    secondaryColor = [22, 160, 133];
+    accentColor = [52, 152, 219]; // Blue
+  }
+
+  // Gradient header
+  pdf.setFillColor(...primaryColor);
+  pdf.rect(0, 0, pageWidth, 80, 'F');
+  
+  // Accent stripe
+  pdf.setFillColor(...accentColor);
+  pdf.rect(0, 75, pageWidth, 5, 'F');
+  
+  // Logo/Brand area
   pdf.setTextColor(255, 255, 255);
-  pdf.setFontSize(24);
+  pdf.setFontSize(32);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Found Your Path', pageWidth / 2, 20, { align: 'center' });
+  pdf.text('Found Your Path', pageWidth / 2, 30, { align: 'center' });
+  
   pdf.setFontSize(14);
-  pdf.text('Business Blueprint with BMC', pageWidth / 2, 28, { align: 'center' });
+  pdf.setFont('helvetica', 'normal');
+  pdf.text('Business Blueprint with BMC', pageWidth / 2, 42, { align: 'center' });
+  
+  // Date badge
+  pdf.setFontSize(10);
+  const generatedDate = data.idea.created_at ? new Date(data.idea.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  pdf.text(`Generated: ${generatedDate}`, pageWidth / 2, 52, { align: 'center' });
+
+  // Main content area with decorative border
+  pdf.setTextColor(0, 0, 0);
+  yPosition = 95;
+  
+  // Project name card
+  pdf.setFillColor(250, 250, 250);
+  pdf.rect(20, yPosition, pageWidth - 40, 50, 'F');
+  pdf.setFillColor(...secondaryColor);
+  pdf.rect(20, yPosition, 5, 50, 'F'); // Left accent bar
+  
+  yPosition += 15;
+  pdf.setFontSize(22);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...primaryColor);
+  const projectName = data.idea.name || data.idea.text?.substring(0, 60) + '...';
+  pdf.text(projectName, 30, yPosition);
+  
+  yPosition += 10;
+  pdf.setFontSize(12);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setTextColor(100, 100, 100);
+  pdf.text(`Project Type: ${projectType}`, 30, yPosition);
+  
+  yPosition += 7;
+  if (data.idea.country) {
+    pdf.text(`Country: ${data.idea.country}`, 30, yPosition);
+  }
 
   // Reset text color
   pdf.setTextColor(0, 0, 0);
-  yPosition = 50;
+  yPosition = 160;
 
   // Project Name & Type
   addText('PROJECT OVERVIEW', 18, true);
@@ -297,63 +374,176 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     const projectType = data.analysis?.idea_type || data.idea.type || 'General';
     const country = data.idea.country || 'your country';
     
-    // Generate context-aware BMC sections
+    // Generate context-aware BMC sections with detailed explanations
     const getBMCAnalysis = (key: string, answer: string) => {
-      const analyses: Record<string, string> = {};
+      const isAgricultural = projectType.toLowerCase().includes('agric') || projectType.toLowerCase().includes('farm');
+      const isFood = projectType.toLowerCase().includes('food') || projectType.toLowerCase().includes('restaurant');
+      const isSaaS = projectType.toLowerCase().includes('saas') || projectType.toLowerCase().includes('software');
+      const isEcommerce = projectType.toLowerCase().includes('ecommerce') || projectType.toLowerCase().includes('store');
+      
+      let analysis = '';
       
       // Value Propositions
       if (key === 'value_propositions') {
-        if (projectType.includes('Agric')) {
-          analyses['analysis'] = `For agricultural projects in ${country}, focus on: sustainable practices, local food security, organic certification opportunities, and export potential. Consider partnerships with agricultural cooperatives and government agricultural programs.`;
-        } else if (projectType.includes('SaaS') || projectType.includes('Software')) {
-          analyses['analysis'] = `For SaaS products, emphasize: scalability, recurring revenue potential, cloud infrastructure, and competitive differentiation. Consider freemium models and strategic partnerships with tech platforms.`;
-        } else if (projectType.includes('Food')) {
-          analyses['analysis'] = `For food businesses in ${country}, highlight: quality ingredients, hygiene standards, delivery options, and local taste preferences. Consider food safety regulations and halal certification if applicable.`;
+        analysis = `📌 What makes you unique?\n\n`;
+        if (isAgricultural) {
+          analysis += `For agricultural projects in ${country}:\n• Focus on sustainable farming practices and environmental impact\n• Highlight local food security contributions\n• Explore organic certification opportunities for premium pricing\n• Consider export potential to neighboring markets\n• Partner with agricultural cooperatives for distribution\n• Leverage government agricultural support programs\n• Emphasize freshness and traceability to customers`;
+        } else if (isFood) {
+          analysis += `For food businesses in ${country}:\n• Quality and freshness of ingredients\n• Hygiene standards and food safety certifications\n• Delivery speed and convenience (consider partnerships with delivery apps)\n• Authentic taste adapted to local preferences\n• Competitive pricing and combo deals\n• Comply with halal certification if targeting Muslim customers\n• Create signature dishes that differentiate you`;
+        } else if (isSaaS) {
+          analysis += `For SaaS products:\n• Scalability and cloud infrastructure advantages\n• Recurring revenue model benefits\n• Focus on ease of use and quick onboarding\n• Data security and compliance (GDPR, local laws)\n• Integration capabilities with other tools\n• Consider freemium model for customer acquisition\n• Provide excellent customer support and documentation`;
         } else {
-          analyses['analysis'] = `Focus on what makes your solution unique in ${country}'s market. Consider local regulations, cultural preferences, and competitive advantages.`;
+          analysis += `Key considerations for ${country}:\n• What specific problem does your solution solve?\n• How is it better/different from competitors?\n• Consider local regulations and cultural preferences\n• Price positioning for target market's purchasing power\n• Build trust through testimonials and social proof`;
         }
       }
       
       // Customer Segments
       else if (key === 'customer_segments') {
-        analyses['analysis'] = `In ${country}, consider: purchasing power, demographic trends, urban vs rural distribution, and digital adoption rates. Tailor your offerings to local economic conditions and cultural preferences.`;
+        analysis += `🎯 Understanding your customers in ${country}:\n\n`;
+        analysis += `• Demographics: age groups, income levels, education\n`;
+        analysis += `• Psychographics: values, lifestyle, purchasing behavior\n`;
+        analysis += `• Geographic: urban vs rural, regional differences\n`;
+        analysis += `• Digital adoption: smartphone usage, online shopping habits\n`;
+        analysis += `• Purchasing power: price sensitivity, willingness to pay\n`;
+        analysis += `• Cultural factors: local traditions, language preferences\n\n`;
+        analysis += `💡 Tip: Start with one specific segment, master it, then expand to others.`;
+      }
+      
+      // Customer Relationships
+      else if (key === 'customer_relationships') {
+        analysis += `🤝 Building strong customer relationships:\n\n`;
+        analysis += `• Personal assistance: Direct human interaction (calls, in-person)\n`;
+        analysis += `• Self-service: Online portals, FAQs, knowledge base\n`;
+        analysis += `• Automated services: Chatbots, email automation\n`;
+        analysis += `• Community building: Social media groups, forums\n`;
+        analysis += `• Loyalty programs: Rewards, discounts for repeat customers\n`;
+        analysis += `• Regular communication: Newsletters, updates, promotions\n\n`;
+        if (country.toLowerCase().includes('egypt') || country.toLowerCase().includes('مصر') || country.toLowerCase().includes('saudi') || country.toLowerCase().includes('السعودية')) {
+          analysis += `💡 In Arab markets, personal relationships and trust are crucial. Consider WhatsApp Business for direct communication.`;
+        }
       }
       
       // Channels
       else if (key === 'channels') {
-        analyses['analysis'] = `Popular channels in ${country} may include: social media (Facebook, Instagram, TikTok), WhatsApp Business, local e-commerce platforms, and traditional retail. Consider mobile-first strategies as smartphone penetration increases.`;
+        analysis += `📣 Reaching your customers in ${country}:\n\n`;
+        analysis += `Digital Channels:\n`;
+        analysis += `• Social media: Facebook, Instagram, TikTok for organic reach\n`;
+        analysis += `• WhatsApp Business: Direct customer communication\n`;
+        analysis += `• Google Ads & SEO: Search engine visibility\n`;
+        analysis += `• Mobile apps: iOS/Android for convenience\n\n`;
+        analysis += `Traditional Channels:\n`;
+        analysis += `• Physical stores/offices for trust building\n`;
+        analysis += `• Partnerships with existing retailers\n`;
+        analysis += `• Local events and exhibitions\n\n`;
+        analysis += `💡 Mobile-first strategy is essential as smartphone usage continues growing.`;
       }
       
       // Key Partners
       else if (key === 'key_partners') {
+        analysis += `🤝 Strategic partnerships in ${country}:\n\n`;
         if (country.toLowerCase().includes('egypt') || country.toLowerCase().includes('مصر')) {
-          analyses['analysis'] = `In Egypt, consider: local suppliers for cost efficiency, partnerships with industrial zones (10th of Ramadan, 6th of October), government support programs (ITIDA, SFD), and logistics providers like Aramex or Bosta.`;
-        } else if (country.toLowerCase().includes('uae') || country.toLowerCase().includes('emirates') || country.toLowerCase().includes('الإمارات')) {
-          analyses['analysis'] = `In UAE, leverage: free zones benefits, Dubai SME support, partnerships with innovation hubs (Dubai Future Foundation), and regional logistics infrastructure.`;
+          analysis += `Egypt-specific opportunities:\n`;
+          analysis += `• Suppliers: Source from 10th of Ramadan, 6th of October industrial cities\n`;
+          analysis += `• Funding: ITIDA (tech), Social Fund for Development (SFD), banks' SME programs\n`;
+          analysis += `• Logistics: Bosta, Aramex, Egypt Post\n`;
+          analysis += `• Accelerators: Flat6Labs, AUC Venture Lab, The Greek Campus\n`;
+          analysis += `• Government support: Export Council, Commercial Service Office`;
         } else if (country.toLowerCase().includes('saudi') || country.toLowerCase().includes('السعودية')) {
-          analyses['analysis'] = `In Saudi Arabia, explore: Vision 2030 initiatives, Monsha'at SME Authority support, partnerships with accelerators (Badir, KAUST), and local manufacturing incentives.`;
+          analysis += `Saudi Arabia-specific opportunities:\n`;
+          analysis += `• Vision 2030 initiatives for SMEs\n`;
+          analysis += `• Monsha'at (Small and Medium Enterprises General Authority)\n`;
+          analysis += `• Accelerators: Badir, KAUST Innovation, STC Ventures\n`;
+          analysis += `• Funding: Saudi Venture Capital Company (SVC), angel networks\n`;
+          analysis += `• Local manufacturing incentives and free zones`;
         } else {
-          analyses['analysis'] = `Identify strategic partnerships with local suppliers, distributors, technology providers, and industry associations in ${country}. Consider government support programs for SMEs.`;
+          analysis += `• Suppliers: Quality, reliability, payment terms\n`;
+          analysis += `• Distributors: Market reach, commission structure\n`;
+          analysis += `• Technology providers: Infrastructure, tools, platforms\n`;
+          analysis += `• Industry associations: Networking, advocacy\n`;
+          analysis += `• Government SME programs: Funding, training, support`;
         }
+      }
+      
+      // Key Activities
+      else if (key === 'key_activities') {
+        analysis += `⚙️ Critical activities for success:\n\n`;
+        if (isSaaS) {
+          analysis += `• Product development & feature updates\n`;
+          analysis += `• Server infrastructure & maintenance\n`;
+          analysis += `• Customer onboarding & training\n`;
+          analysis += `• Technical support & bug fixes\n`;
+          analysis += `• Marketing & sales activities\n`;
+          analysis += `• Data security & backup management`;
+        } else if (isAgricultural) {
+          analysis += `• Crop/livestock management & care\n`;
+          analysis += `• Quality control & monitoring\n`;
+          analysis += `• Harvesting & processing\n`;
+          analysis += `• Inventory & storage management\n`;
+          analysis += `• Distribution & logistics\n`;
+          analysis += `• Marketing & sales to buyers`;
+        } else {
+          analysis += `• Production/service delivery\n`;
+          analysis += `• Quality assurance\n`;
+          analysis += `• Marketing & customer acquisition\n`;
+          analysis += `• Sales & customer service\n`;
+          analysis += `• Operations management\n`;
+          analysis += `• Financial management & reporting`;
+        }
+      }
+      
+      // Key Resources
+      else if (key === 'key_resources') {
+        analysis += `🔑 Essential resources needed:\n\n`;
+        analysis += `Physical:\n• Facilities, equipment, inventory, technology\n\n`;
+        analysis += `Intellectual:\n• Brand, patents, copyrights, data, know-how\n\n`;
+        analysis += `Human:\n• Team skills, experience, specialists\n\n`;
+        analysis += `Financial:\n• Startup capital, cash reserves, credit lines\n\n`;
+        analysis += `💡 Focus on resources that create competitive advantage and are hard to replicate.`;
       }
       
       // Cost Structure
       else if (key === 'cost_structure') {
-        analyses['analysis'] = `Key cost considerations in ${country}: labor costs, rent/facilities, raw materials, marketing, licenses/permits, and utilities. Plan for seasonal variations and currency fluctuations. Consider tax incentives for startups.`;
+        analysis += `💰 Managing costs in ${country}:\n\n`;
+        analysis += `Fixed Costs:\n`;
+        analysis += `• Rent/facilities, salaries, insurance, licenses\n\n`;
+        analysis += `Variable Costs:\n`;
+        analysis += `• Raw materials, marketing, commissions, utilities\n\n`;
+        analysis += `Important considerations:\n`;
+        analysis += `• Seasonal variations in demand/supply\n`;
+        analysis += `• Currency fluctuations for imports\n`;
+        analysis += `• Tax incentives for startups\n`;
+        analysis += `• Payment terms with suppliers (30/60/90 days)\n\n`;
+        analysis += `💡 Keep burn rate low initially, focus on unit economics profitability.`;
       }
       
       // Revenue Streams
       else if (key === 'revenue_streams') {
-        if (projectType.includes('SaaS')) {
-          analyses['analysis'] = `SaaS revenue models: monthly/annual subscriptions, tiered pricing, usage-based fees, enterprise licenses. Consider local payment methods (cash on delivery, Fawry, mada) and regional pricing strategies.`;
-        } else if (projectType.includes('E-commerce')) {
-          analyses['analysis'] = `E-commerce revenue: direct sales, marketplace commissions, premium memberships, affiliate marketing. Accept popular payment methods in ${country} including mobile wallets and cash on delivery.`;
+        analysis += `💵 Revenue generation strategies:\n\n`;
+        if (isSaaS) {
+          analysis += `• Monthly/annual subscriptions (SaaS model)\n`;
+          analysis += `• Tiered pricing (Basic/Pro/Enterprise)\n`;
+          analysis += `• Usage-based fees (pay per use)\n`;
+          analysis += `• Freemium model (free + premium features)\n`;
+          analysis += `• Enterprise custom licenses\n\n`;
+          analysis += `Payment methods in ${country}: Credit cards, PayPal, local payment gateways, bank transfers`;
+        } else if (isEcommerce) {
+          analysis += `• Direct product sales\n`;
+          analysis += `• Marketplace commissions\n`;
+          analysis += `• Premium memberships\n`;
+          analysis += `• Affiliate marketing\n`;
+          analysis += `• Advertising revenue\n\n`;
+          analysis += `Payment methods: Cash on delivery, credit cards, mobile wallets, installments`;
         } else {
-          analyses['analysis'] = `Diversify revenue streams: product sales, service fees, licensing, partnerships. Consider payment preferences in ${country} and offer flexible payment terms to increase adoption.`;
+          analysis += `• Product sales revenue\n`;
+          analysis += `• Service fees\n`;
+          analysis += `• Licensing/franchising\n`;
+          analysis += `• Subscription models\n`;
+          analysis += `• Commission-based income\n\n`;
+          analysis += `💡 Diversify revenue streams to reduce dependency on single source. Consider local payment preferences including cash on delivery.`;
         }
       }
       
-      return analyses['analysis'] || `Based on your answer and ${country}'s market conditions, ensure this aligns with local regulations, customer preferences, and competitive landscape.`;
+      return analysis;
     };
 
     const bmcSections = [

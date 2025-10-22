@@ -80,8 +80,15 @@ export const getResourceRecommendations = (
         title: 'FAO e-Learning Academy',
         type: 'course',
         url: 'https://elearning.fao.org/',
-        description: 'Free courses on sustainable agriculture and food security',
+        description: 'Free courses on sustainable agriculture and food security from UN',
         platform: 'FAO'
+      },
+      {
+        title: 'Modern Farming Techniques',
+        type: 'website',
+        url: 'https://www.agriculture.com/farm-management',
+        description: 'Latest farming technology, market trends and management tips',
+        platform: 'Agriculture.com'
       },
       {
         title: 'The Market Gardener - Jean-Martin Fortier',
@@ -89,6 +96,13 @@ export const getResourceRecommendations = (
         url: 'https://www.amazon.com/Market-Gardener-Successful-Handbook-Small-scale/dp/0865717656',
         description: 'Guide to profitable small-scale organic farming',
         platform: 'Amazon'
+      },
+      {
+        title: 'Small Farm Business Planning',
+        type: 'website',
+        url: 'https://www.sare.org/publications/building-a-sustainable-business/',
+        description: 'Free guide to sustainable farming business planning',
+        platform: 'SARE'
       }
     ];
   }
@@ -237,18 +251,32 @@ export const getResourceRecommendations = (
   if (type.includes('food') || type.includes('restaurant') || type.includes('مطعم') || type.includes('أطعمة')) {
     return [
       {
-        title: 'Food Business School',
+        title: 'How to Start a Restaurant Business',
+        type: 'website',
+        url: 'https://www.restaurantengine.com/how-to-start-a-restaurant/',
+        description: 'Complete guide to starting and running a restaurant',
+        platform: 'Restaurant Engine'
+      },
+      {
+        title: 'Food Truck Empire - Start Your Food Business',
         type: 'course',
-        url: 'https://www.udemy.com/topic/food-business/',
-        description: 'Courses on starting and running food businesses',
+        url: 'https://www.udemy.com/course/food-truck-empire/',
+        description: 'Learn how to start and run a successful food business',
         platform: 'Udemy'
       },
       {
         title: 'Setting the Table - Danny Meyer',
         type: 'book',
         url: 'https://www.amazon.com/Setting-Table-Transforming-Hospitality-Business/dp/0060742763',
-        description: 'Restaurant and hospitality business guide',
+        description: 'Restaurant and hospitality business guide from Shake Shack founder',
         platform: 'Amazon'
+      },
+      {
+        title: 'Restaurant Success by the Numbers',
+        type: 'website',
+        url: 'https://www.thebalancemoney.com/restaurant-business-4161646',
+        description: 'Financial planning and management for restaurants',
+        platform: 'The Balance'
       }
     ];
   }
@@ -327,12 +355,22 @@ export const getYouTubeChannelRecommendations = (
       {
         name: 'No-Till Growers',
         url: 'https://www.youtube.com/@notillgrowers',
-        description: 'Modern sustainable farming techniques'
+        description: 'Modern sustainable farming techniques and market gardening'
       },
       {
         name: 'Richard Perkins',
         url: 'https://www.youtube.com/@richardperkins',
-        description: 'Regenerative agriculture and profitable farming'
+        description: 'Regenerative agriculture and profitable farming strategies'
+      },
+      {
+        name: 'Curtis Stone',
+        url: 'https://www.youtube.com/@Theurbanfarmer',
+        description: 'Small-scale profitable farming and urban agriculture'
+      },
+      {
+        name: 'Farm Marketing Solutions',
+        url: 'https://www.youtube.com/@FarmMarketingSolutions',
+        description: 'Marketing strategies and business tips for farmers'
       }
     ];
   }
@@ -347,7 +385,17 @@ export const getYouTubeChannelRecommendations = (
       {
         name: 'Toast',
         url: 'https://www.youtube.com/@ToastTab',
-        description: 'Restaurant technology and operations tips'
+        description: 'Restaurant technology, operations tips, and industry insights'
+      },
+      {
+        name: 'The Restaurant Boss',
+        url: 'https://www.youtube.com/@TheRestaurantBoss',
+        description: 'Restaurant management, marketing, and profitability tips'
+      },
+      {
+        name: 'Chef Lav',
+        url: 'https://www.youtube.com/@ChefLav',
+        description: 'Food business startup advice and kitchen operations'
       }
     ];
   }
