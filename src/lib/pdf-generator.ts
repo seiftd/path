@@ -190,8 +190,7 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     yPosition += 5;
   }
 
-  // Project Type
-  const projectType = data.analysis?.idea_type || data.idea.type || data.idea.category;
+  // Project Type (already defined at top)
   pdf.setFontSize(12);
   pdf.setFont('helvetica', 'bold');
   pdf.text('Project Type: ', 20, yPosition);
@@ -238,11 +237,10 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     }
   }
 
-  // Generation Info
+  // Generation Info (generatedDate already defined at top)
   pdf.setFontSize(10);
   pdf.setTextColor(100, 100, 100);
   const userName = data.user?.name || 'User';
-  const generatedDate = data.idea.created_at ? new Date(data.idea.created_at).toLocaleDateString() : new Date().toLocaleDateString();
   pdf.text(`Generated for: ${userName} | Date: ${generatedDate}`, 20, yPosition);
   pdf.setTextColor(0, 0, 0);
   yPosition += 15;
