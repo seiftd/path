@@ -53,6 +53,40 @@ export default function GeneratePath() {
       const bmcAnswers = JSON.parse(localStorage.getItem('bmcAnswers') || '{}');
       const answers = JSON.parse(localStorage.getItem('questionAnswers') || '[]');
 
+      // Save idea to database
+      try {
+        const saveResponse = await fetch('/api/ideas/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: ideaData.text,
+            name: ideaData.name,
+            country: ideaData.country,
+            founderName: ideaData.founderName,
+            email: ideaData.email,
+            founders: ideaData.founders,
+            category: ideaData.analysis?.category,
+            idea_type: ideaData.analysis?.idea_type,
+            field: ideaData.analysis?.field,
+            competitors: ideaData.analysis?.competitors,
+            bmcAnswers: bmcAnswers
+          }),
+        });
+
+        if (saveResponse.ok) {
+          const savedIdea = await saveResponse.json();
+          console.log('Idea saved to database:', savedIdea);
+          // Update localStorage with database ID
+          ideaData.id = savedIdea.ideaId;
+          localStorage.setItem('currentIdea', JSON.stringify(ideaData));
+        }
+      } catch (saveError) {
+        console.error('Error saving idea to database:', saveError);
+        // Continue even if save fails
+      }
+
       // Generate path using AI
       const response = await fetch('/api/ai/path', {
         method: 'POST',
