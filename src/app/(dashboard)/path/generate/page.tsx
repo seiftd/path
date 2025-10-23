@@ -103,11 +103,20 @@ export default function GeneratePath() {
   };
 
   const getThemeFromCategory = (category: string) => {
-    if (category.toLowerCase().includes('agriculture') || category.toLowerCase().includes('farming')) {
+    const cat = category.toLowerCase();
+    
+    // Tree theme for nature-related businesses
+    if (cat.includes('agricult') || cat.includes('farm') || cat.includes('food') || 
+        cat.includes('restaurant') || cat.includes('environment') || cat.includes('sustainability')) {
       return 'tree';
-    } else if (category.toLowerCase().includes('automotive') || category.toLowerCase().includes('manufacturing')) {
+    } 
+    // Assembly theme for manufacturing and production
+    else if (cat.includes('manufactur') || cat.includes('automotive') || cat.includes('factory') ||
+             cat.includes('production') || cat.includes('industrial')) {
       return 'assembly';
-    } else {
+    } 
+    // Circuit theme for tech, SaaS, and digital businesses (default)
+    else {
       return 'circuit';
     }
   };

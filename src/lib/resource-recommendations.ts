@@ -73,8 +73,43 @@ export const getResourceRecommendations = (
     ];
   }
 
+  // Manufacturing/Clothing/Textile
+  if (type.includes('manufactur') || type.includes('مصنع') || type.includes('ملابس') || 
+      type.includes('clothing') || type.includes('textile') || type.includes('garment') || type.includes('خياطة')) {
+    return [
+      {
+        title: 'Industrial Sewing Machine Guide',
+        type: 'website',
+        url: 'https://www.sewingmachinefun.com/industrial-sewing-machines/',
+        description: 'Complete guide to selecting and using industrial sewing machines',
+        platform: 'Sewing Machine Fun'
+      },
+      {
+        title: 'Garment Manufacturing Technology',
+        type: 'course',
+        url: 'https://www.udemy.com/topic/garment-manufacturing/',
+        description: 'Learn garment production processes and quality control',
+        platform: 'Udemy'
+      },
+      {
+        title: 'Textile Manufacturing Equipment',
+        type: 'website',
+        url: 'https://www.textiletoday.com.bd/category/manufacturing/',
+        description: 'Latest textile machinery and manufacturing techniques',
+        platform: 'Textile Today'
+      },
+      {
+        title: 'Fashion Business Manual',
+        type: 'book',
+        url: 'https://www.amazon.com/Fashion-Business-Manual-Updated-Expanded/dp/1419732579',
+        description: 'Comprehensive guide to starting a clothing manufacturing business',
+        platform: 'Amazon'
+      }
+    ];
+  }
+  
   // Agricultural Resources
-  if (type.includes('agricultural') || type.includes('زراع') || type.includes('farming')) {
+  else if (type.includes('agricultural') || type.includes('زراع') || type.includes('farming')) {
     return [
       {
         title: 'FAO e-Learning Academy',
@@ -305,7 +340,35 @@ export const getYouTubeChannelRecommendations = (
 ): Array<{ name: string; url: string; description: string }> => {
   const type = projectType.toLowerCase();
 
-  if (type.includes('saas') || type.includes('software')) {
+  // Manufacturing/Clothing/Sewing
+  if (type.includes('manufactur') || type.includes('clothing') || type.includes('textile') || 
+      type.includes('garment') || type.includes('خياطة') || type.includes('ملابس')) {
+    return [
+      {
+        name: 'Professor Pincushion',
+        url: 'https://www.youtube.com/@ProfessorPincushion',
+        description: 'Professional sewing tutorials and industrial techniques'
+      },
+      {
+        name: 'Sewing Report',
+        url: 'https://www.youtube.com/@sewingreport',
+        description: 'Industrial sewing machine reviews and techniques'
+      },
+      {
+        name: 'Fashion Stepbystep',
+        url: 'https://www.youtube.com/@fashionstepbystep',
+        description: 'Garment construction and pattern making'
+      },
+      {
+        name: 'Textile Learner',
+        url: 'https://www.youtube.com/@TextileLearner',
+        description: 'Textile manufacturing processes and technology'
+      }
+    ];
+  }
+
+  // SaaS/Software
+  else if (type.includes('saas') || type.includes('software')) {
     return [
       {
         name: 'Y Combinator',
