@@ -19,17 +19,12 @@ import {
 
 interface Idea {
   id: string;
-  title: string;
-  description: string;
-  status: 'analyzed' | 'processing' | 'failed';
-  createdAt: string;
-  analysis?: {
-    strengths: string[];
-    weaknesses: string[];
-    opportunities: string[];
-    threats: string[];
-    roadmap: string[];
-  };
+  text: string;
+  category: string;
+  idea_type: string;
+  created_at: string;
+  field?: string;
+  competitors?: string[];
 }
 
 export default function IdeasPage() {
@@ -42,43 +37,25 @@ export default function IdeasPage() {
     if (isLoaded && !user) {
       router.push('/sign-in');
     } else if (user) {
-      // Simulate fetching user ideas
-      // In real app, this would come from your database
-      setTimeout(() => {
-        setIdeas([
-          {
-            id: '1',
-            title: 'AI-Powered Fitness App',
-            description: 'A mobile app that uses AI to create personalized workout plans based on user goals and preferences.',
-            status: 'analyzed',
-            createdAt: '2024-01-15',
-            analysis: {
-              strengths: ['High market demand', 'Scalable technology'],
-              weaknesses: ['High development costs', 'Competitive market'],
-              opportunities: ['Growing fitness industry', 'AI advancement'],
-              threats: ['Big tech competition', 'Regulatory changes'],
-              roadmap: ['MVP development', 'User testing', 'Market launch']
-            }
-          },
-          {
-            id: '2',
-            title: 'Sustainable Packaging Solution',
-            description: 'Eco-friendly packaging materials for e-commerce businesses.',
-            status: 'analyzed',
-            createdAt: '2024-01-10',
-            analysis: {
-              strengths: ['Environmental benefits', 'Growing awareness'],
-              weaknesses: ['Higher costs', 'Limited suppliers'],
-              opportunities: ['Government incentives', 'Consumer demand'],
-              threats: ['Economic downturns', 'Regulatory changes'],
-              roadmap: ['Material research', 'Pilot program', 'Scale production']
-            }
-          }
-        ]);
-        setIsLoading(false);
-      }, 1000);
+      // Fetch real user ideas from database
+      fetchUserIdeas();
     }
   }, [isLoaded, user, router]);
+
+  const fetchUserIdeas = async () => {
+    try {
+      const response = await fetch('/api/ideas/user');
+      if (response.ok) {
+        const data = await response.json();
+        setIdeas(data.ideas || []);
+      }
+    } catch (error) {
+      console.error('Error fetching ideas:', error);
+      setIdeas([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleDownloadPDF = async (ideaId: string) => {
     try {
@@ -99,17 +76,19 @@ export default function IdeasPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'analyzed':
-        return <Badge className="bg-green-100 text-green-800">Analyzed</Badge>;
-      case 'processing':
-        return <Badge className="bg-yellow-100 text-yellow-800">Processing</Badge>;
-      case 'failed':
-        return <Badge className="bg-red-100 text-red-800">Failed</Badge>;
-      default:
-        return <Badge variant="secondary">Unknown</Badge>;
-    }
+  const handleViewDetails = (idea: Idea) => {
+    // Store idea in localStorage and navigate to path generation
+    localStorage.setItem('currentIdea', JSON.stringify({
+      id: idea.id,
+      text: idea.text,
+      analysis: {
+        category: idea.category,
+        idea_type: idea.idea_type,
+        field: idea.field,
+        competitors: idea.competitors
+      }
+    }));
+    router.push('/path/generate');
   };
 
   if (!isLoaded || isLoading) {
@@ -182,61 +161,60 @@ export default function IdeasPage() {
               <Card key={idea.id} className="p-6 hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <div className="flex items-center mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900 mr-3" style={{ fontFamily: 'Georgia, serif' }}>
-                        {idea.title}
-                      </h3>
-                      {getStatusBadge(idea.status)}
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline">{idea.category}</Badge>
+                      <Badge variant="secondary">{idea.idea_type}</Badge>
+                      <Badge className="bg-green-100 text-green-800">Analyzed</Badge>
                     </div>
-                    <p className="text-gray-600 mb-3">{idea.description}</p>
+                    <p className="text-gray-900 font-medium mb-3">{idea.text}</p>
+                    {idea.field && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-semibold">Industry:</span> {idea.field}
+                      </p>
+                    )}
+                    {idea.competitors && idea.competitors.length > 0 && (
+                      <p className="text-sm text-gray-600 mb-2">
+                        <span className="font-semibold">Competitors:</span> {idea.competitors.join(', ')}
+                      </p>
+                    )}
                     <div className="flex items-center text-sm text-gray-500">
                       <Calendar className="w-4 h-4 mr-1" />
-                      <span>Created {new Date(idea.createdAt).toLocaleDateString()}</span>
+                      <span>Created {new Date(idea.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
-
-                {idea.analysis && (
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <h4 className="font-semibold text-green-700 mb-2">Strengths</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {idea.analysis.strengths.map((strength, index) => (
-                          <li key={index}>• {strength}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-red-700 mb-2">Weaknesses</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {idea.analysis.weaknesses.map((weakness, index) => (
-                          <li key={index}>• {weakness}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                )}
 
                 <div className="flex items-center justify-between pt-4 border-t">
                   <div className="flex space-x-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/idea/${idea.id}`)}
+                      onClick={() => handleViewDetails(idea)}
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       View Details
                     </Button>
-                    {idea.status === 'analyzed' && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDownloadPDF(idea.id)}
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download PDF
-                      </Button>
-                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        // Navigate to PDF preview
+                        localStorage.setItem('currentIdea', JSON.stringify({
+                          id: idea.id,
+                          text: idea.text,
+                          analysis: {
+                            category: idea.category,
+                            idea_type: idea.idea_type,
+                            field: idea.field,
+                            competitors: idea.competitors
+                          }
+                        }));
+                        router.push('/pdf/preview');
+                      }}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </Button>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <TrendingUp className="w-4 h-4 mr-1" />

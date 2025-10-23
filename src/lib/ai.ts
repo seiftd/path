@@ -12,8 +12,23 @@ function getAnalyzeFallback(ideaText: string) {
   let competitors: string[] = [];
   let idea_type = 'General';
   
+  // Manufacturing/Clothing (مصنع ملابس)
+  if (idea.includes('مصنع') || idea.includes('ملابس') || idea.includes('خياطة') || idea.includes('نسيج') || 
+      idea.includes('factory') || idea.includes('clothing') || idea.includes('garment') || idea.includes('textile')) {
+    category = 'Manufacturing';
+    field = 'Clothing & Textile Manufacturing';
+    idea_type = 'Manufacturing Facility';
+    competitors = ['Local garment factories', 'Textile manufacturers', 'Clothing brands'];
+  }
+  // Manufacturing General
+  else if (idea.includes('manufactur') || idea.includes('صناع') || idea.includes('إنتاج')) {
+    category = 'Manufacturing';
+    field = 'Manufacturing & Production';
+    idea_type = 'Manufacturing Business';
+    competitors = ['Local manufacturers', 'Industrial companies', 'Production facilities'];
+  }
   // SaaS/Software
-  if (idea.includes('saas') || idea.includes('software') || idea.includes('platform')) {
+  else if (idea.includes('saas') || idea.includes('software') || idea.includes('platform') || idea.includes('برمج')) {
     category = 'SaaS/Software';
     field = 'Software as a Service';
     idea_type = 'SaaS Platform';
@@ -27,42 +42,42 @@ function getAnalyzeFallback(ideaText: string) {
     competitors = ['Coinbase', 'Binance', 'MetaMask', 'Kraken'];
   } 
   // E-commerce
-  else if (idea.includes('ecommerce') || idea.includes('shop') || idea.includes('store') || idea.includes('متجر')) {
+  else if (idea.includes('ecommerce') || idea.includes('shop') || idea.includes('store') || idea.includes('متجر') || idea.includes('تجارة')) {
     category = 'E-commerce';
     field = 'Online Retail';
     idea_type = 'E-commerce Platform';
     competitors = ['Amazon', 'Shopify stores', 'Noon', 'Jumia'];
   } 
   // Agriculture
-  else if (idea.includes('farm') || idea.includes('agriculture') || idea.includes('زراع') || idea.includes('مزرعة')) {
+  else if (idea.includes('farm') || idea.includes('agriculture') || idea.includes('زراع') || idea.includes('مزرعة') || idea.includes('محاصيل')) {
     category = 'Agriculture';
     field = 'Agricultural Technology';
     idea_type = 'Agricultural Project';
     competitors = ['Local farms', 'AgriTech startups', 'Cooperative farms'];
   }
   // Food & Beverage
-  else if (idea.includes('food') || idea.includes('restaurant') || idea.includes('cafe') || idea.includes('مطعم') || idea.includes('أطعمة')) {
+  else if (idea.includes('food') || idea.includes('restaurant') || idea.includes('cafe') || idea.includes('مطعم') || idea.includes('أطعمة') || idea.includes('مقهى')) {
     category = 'Food & Beverage';
     field = 'Food Service Industry';
     idea_type = 'Food Business';
     competitors = ['Local restaurants', 'Food chains', 'Delivery platforms'];
   }
   // Healthcare
-  else if (idea.includes('health') || idea.includes('medical') || idea.includes('clinic') || idea.includes('صح')) {
+  else if (idea.includes('health') || idea.includes('medical') || idea.includes('clinic') || idea.includes('صح') || idea.includes('عياد') || idea.includes('مستشف')) {
     category = 'Healthcare';
     field = 'Healthcare Services';
     idea_type = 'Healthcare Solution';
     competitors = ['Local clinics', 'Telemedicine platforms', 'Healthcare providers'];
   }
   // Education
-  else if (idea.includes('education') || idea.includes('learning') || idea.includes('course') || idea.includes('تعليم')) {
+  else if (idea.includes('education') || idea.includes('learning') || idea.includes('course') || idea.includes('تعليم') || idea.includes('دراس') || idea.includes('مدرس')) {
     category = 'Education';
     field = 'Educational Technology';
     idea_type = 'EdTech Platform';
     competitors = ['Coursera', 'Udemy', 'Khan Academy', 'Local institutions'];
   }
   // Real Estate
-  else if (idea.includes('real estate') || idea.includes('property') || idea.includes('عقار')) {
+  else if (idea.includes('real estate') || idea.includes('property') || idea.includes('عقار') || idea.includes('بناء')) {
     category = 'Real Estate';
     field = 'Property & Real Estate';
     idea_type = 'Real Estate Business';
@@ -76,21 +91,21 @@ function getAnalyzeFallback(ideaText: string) {
     competitors = ['Similar apps on App Store', 'Similar apps on Google Play'];
   }
   // Marketing/Advertising
-  else if (idea.includes('marketing') || idea.includes('advertising') || idea.includes('تسويق')) {
+  else if (idea.includes('marketing') || idea.includes('advertising') || idea.includes('تسويق') || idea.includes('إعلان')) {
     category = 'Marketing';
     field = 'Digital Marketing';
     idea_type = 'Marketing Agency';
     competitors = ['Digital agencies', 'Freelance marketers', 'Marketing platforms'];
   }
   // Security
-  else if (idea.includes('security') || idea.includes('protection') || idea.includes('أمن')) {
+  else if (idea.includes('security') || idea.includes('protection') || idea.includes('أمن') || idea.includes('حراس')) {
     category = 'Security';
     field = 'Security Services';
     idea_type = 'Security Solution';
     competitors = ['Security companies', 'Cybersecurity firms', 'Local security services'];
   }
   // Environmental
-  else if (idea.includes('environment') || idea.includes('sustainability') || idea.includes('green') || idea.includes('بيئ')) {
+  else if (idea.includes('environment') || idea.includes('sustainability') || idea.includes('green') || idea.includes('بيئ') || idea.includes('إعادة تدوير')) {
     category = 'Environmental';
     field = 'Environmental Services';
     idea_type = 'Sustainability Project';
