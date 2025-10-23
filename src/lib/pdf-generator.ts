@@ -216,6 +216,15 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
     yPosition += 8;
   }
 
+  // Email
+  if (data.user?.email) {
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Email: ', 20, yPosition);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(data.user.email, 55, yPosition);
+    yPosition += 8;
+  }
+
   // Founders
   if (data.idea.founders) {
     pdf.setFont('helvetica', 'bold');
@@ -383,21 +392,26 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Value Propositions
       if (key === 'value_propositions') {
-        analysis = `📌 What makes you unique?\n\n`;
+        analysis = `📌 Your Value Proposition:\n\n`;
+        // Show user's actual answer
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Strategic Insights for ${projectType} in ${country}:\n\n`;
         if (isAgricultural) {
-          analysis += `For agricultural projects in ${country}:\n• Focus on sustainable farming practices and environmental impact\n• Highlight local food security contributions\n• Explore organic certification opportunities for premium pricing\n• Consider export potential to neighboring markets\n• Partner with agricultural cooperatives for distribution\n• Leverage government agricultural support programs\n• Emphasize freshness and traceability to customers`;
+          analysis += `• Focus on sustainable farming practices and environmental impact\n• Highlight local food security contributions\n• Explore organic certification opportunities for premium pricing\n• Consider export potential to neighboring markets\n• Partner with agricultural cooperatives for distribution\n• Leverage government agricultural support programs\n• Emphasize freshness and traceability to customers`;
         } else if (isFood) {
-          analysis += `For food businesses in ${country}:\n• Quality and freshness of ingredients\n• Hygiene standards and food safety certifications\n• Delivery speed and convenience (consider partnerships with delivery apps)\n• Authentic taste adapted to local preferences\n• Competitive pricing and combo deals\n• Comply with halal certification if targeting Muslim customers\n• Create signature dishes that differentiate you`;
+          analysis += `• Quality and freshness of ingredients\n• Hygiene standards and food safety certifications\n• Delivery speed and convenience (consider partnerships with delivery apps)\n• Authentic taste adapted to local preferences\n• Competitive pricing and combo deals\n• Comply with halal certification if targeting Muslim customers\n• Create signature dishes that differentiate you`;
         } else if (isSaaS) {
-          analysis += `For SaaS products:\n• Scalability and cloud infrastructure advantages\n• Recurring revenue model benefits\n• Focus on ease of use and quick onboarding\n• Data security and compliance (GDPR, local laws)\n• Integration capabilities with other tools\n• Consider freemium model for customer acquisition\n• Provide excellent customer support and documentation`;
+          analysis += `• Scalability and cloud infrastructure advantages\n• Recurring revenue model benefits\n• Focus on ease of use and quick onboarding\n• Data security and compliance (GDPR, local laws)\n• Integration capabilities with other tools\n• Consider freemium model for customer acquisition\n• Provide excellent customer support and documentation`;
         } else {
-          analysis += `Key considerations for ${country}:\n• What specific problem does your solution solve?\n• How is it better/different from competitors?\n• Consider local regulations and cultural preferences\n• Price positioning for target market's purchasing power\n• Build trust through testimonials and social proof`;
+          analysis += `• What specific problem does your solution solve?\n• How is it better/different from competitors?\n• Consider local regulations and cultural preferences\n• Price positioning for target market's purchasing power\n• Build trust through testimonials and social proof`;
         }
       }
       
       // Customer Segments
       else if (key === 'customer_segments') {
-        analysis += `🎯 Understanding your customers in ${country}:\n\n`;
+        analysis += `🎯 Your Target Customers:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Customer Insights for ${country}:\n\n`;
         analysis += `• Demographics: age groups, income levels, education\n`;
         analysis += `• Psychographics: values, lifestyle, purchasing behavior\n`;
         analysis += `• Geographic: urban vs rural, regional differences\n`;
@@ -409,7 +423,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Customer Relationships
       else if (key === 'customer_relationships') {
-        analysis += `🤝 Building strong customer relationships:\n\n`;
+        analysis += `🤝 Your Customer Relationship Strategy:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Relationship Building Tips:\n\n`;
         analysis += `• Personal assistance: Direct human interaction (calls, in-person)\n`;
         analysis += `• Self-service: Online portals, FAQs, knowledge base\n`;
         analysis += `• Automated services: Chatbots, email automation\n`;
@@ -423,7 +439,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Channels
       else if (key === 'channels') {
-        analysis += `📣 Reaching your customers in ${country}:\n\n`;
+        analysis += `📣 Your Distribution Channels:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Channel Recommendations for ${country}:\n\n`;
         analysis += `Digital Channels:\n`;
         analysis += `• Social media: Facebook, Instagram, TikTok for organic reach\n`;
         analysis += `• WhatsApp Business: Direct customer communication\n`;
@@ -438,7 +456,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Key Partners
       else if (key === 'key_partners') {
-        analysis += `🤝 Strategic partnerships in ${country}:\n\n`;
+        analysis += `🤝 Your Key Partners:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Partnership Opportunities in ${country}:\n\n`;
         if (country.toLowerCase().includes('egypt') || country.toLowerCase().includes('مصر')) {
           analysis += `Egypt-specific opportunities:\n`;
           analysis += `• Suppliers: Source from 10th of Ramadan, 6th of October industrial cities\n`;
@@ -464,7 +484,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Key Activities
       else if (key === 'key_activities') {
-        analysis += `⚙️ Critical activities for success:\n\n`;
+        analysis += `⚙️ Your Key Activities:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Critical Activities for Success:\n\n`;
         if (isSaaS) {
           analysis += `• Product development & feature updates\n`;
           analysis += `• Server infrastructure & maintenance\n`;
@@ -491,7 +513,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Key Resources
       else if (key === 'key_resources') {
-        analysis += `🔑 Essential resources needed:\n\n`;
+        analysis += `🔑 Your Key Resources:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Essential Resources Needed:\n\n`;
         analysis += `Physical:\n• Facilities, equipment, inventory, technology\n\n`;
         analysis += `Intellectual:\n• Brand, patents, copyrights, data, know-how\n\n`;
         analysis += `Human:\n• Team skills, experience, specialists\n\n`;
@@ -501,7 +525,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Cost Structure
       else if (key === 'cost_structure') {
-        analysis += `💰 Managing costs in ${country}:\n\n`;
+        analysis += `💰 Your Cost Structure:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Cost Management Tips for ${country}:\n\n`;
         analysis += `Fixed Costs:\n`;
         analysis += `• Rent/facilities, salaries, insurance, licenses\n\n`;
         analysis += `Variable Costs:\n`;
@@ -516,7 +542,9 @@ export const generatePDF = async (data: PDFData): Promise<Blob> => {
       
       // Revenue Streams
       else if (key === 'revenue_streams') {
-        analysis += `💵 Revenue generation strategies:\n\n`;
+        analysis += `💵 Your Revenue Streams:\n\n`;
+        analysis += `YOUR ANSWER: ${answer || 'Not specified'}\n\n`;
+        analysis += `💡 Revenue Generation Strategies:\n\n`;
         if (isSaaS) {
           analysis += `• Monthly/annual subscriptions (SaaS model)\n`;
           analysis += `• Tiered pricing (Basic/Pro/Enterprise)\n`;

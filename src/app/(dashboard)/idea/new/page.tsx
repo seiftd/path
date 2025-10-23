@@ -23,6 +23,22 @@ export default function NewIdea() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<any>(null);
 
+  useEffect(() => {
+    // Check if there's a brainstorm idea in localStorage
+    const brainstormIdea = localStorage.getItem('selectedBrainstormIdea');
+    if (brainstormIdea) {
+      try {
+        const idea = JSON.parse(brainstormIdea);
+        setIdeaText(idea.text || '');
+        setProjectName(idea.name || '');
+        // Clear it after loading
+        localStorage.removeItem('selectedBrainstormIdea');
+      } catch (error) {
+        console.error('Error loading brainstorm idea:', error);
+      }
+    }
+  }, []);
+
   const handleSubmit = async () => {
     if (!ideaText.trim()) return;
 

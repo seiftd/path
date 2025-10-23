@@ -240,7 +240,21 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4" style={{ fontFamily: 'Georgia, serif' }}>
             Quick Actions
           </h2>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-3 gap-4">
+            {/* Brainstorm Ideas - Pro Only */}
+            {isPro && (
+              <Button
+                onClick={() => router.push('/brainstorm')}
+                variant="outline"
+                className="h-24 flex-col gap-2 bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200 hover:border-purple-400"
+              >
+                <Zap className="w-6 h-6 text-purple-600" />
+                <span className="font-semibold text-purple-900">Brainstorm Ideas</span>
+                <Badge variant="secondary" className="text-xs bg-purple-600 text-white">
+                  Pro Only
+                </Badge>
+              </Button>
+            )}
             <Button
               size="lg"
               className="h-20 text-left justify-start"
