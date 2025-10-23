@@ -5,18 +5,20 @@ export interface BMCSection {
   explanation: string;
   examples: string[];
   options: string[];
+  allowMultiple?: boolean; // Allow multiple selections
+  country?: string; // For country-specific options
 }
 
 export interface BMCAnswers {
-  customer_segments: string;
-  value_propositions: string;
-  channels: string;
-  customer_relationships: string;
-  revenue_streams: string;
-  key_resources: string;
-  key_activities: string;
-  key_partners: string;
-  cost_structure: string;
+  customer_segments: string | string[];
+  value_propositions: string | string[];
+  channels: string | string[];
+  customer_relationships: string | string[];
+  revenue_streams: string | string[];
+  key_resources: string | string[];
+  key_activities: string | string[];
+  key_partners: string | string[];
+  cost_structure: string | string[];
 }
 
 export const getBMCSections = (ideaType?: string, category?: string): BMCSection[] => {
@@ -48,14 +50,15 @@ export const getBMCSections = (ideaType?: string, category?: string): BMCSection
     {
       id: 'channels',
       title: 'Channels',
-      question: 'How do you reach your customer segments? How do you deliver value propositions?',
+      question: 'How do you reach your customer segments? (Select all that apply)',
       explanation: 'Channels are how a company communicates with and reaches its customer segments to deliver a value proposition. This includes both communication and distribution channels.',
       examples: [
         'Direct channels: Website, physical stores, sales force',
         'Indirect channels: Partner stores, wholesalers, online marketplaces',
         'Digital channels: Social media, email marketing, mobile apps'
       ],
-      options: getChannelOptions(ideaType, category)
+      options: getChannelOptions(ideaType, category),
+      allowMultiple: true
     },
     {
       id: 'customer_relationships',
@@ -440,7 +443,8 @@ function getKeyPartnerOptions(ideaType?: string, category?: string): string[] {
       'Integration partners (Zapier, Slack)',
       'Payment processors (Stripe, PayPal)',
       'Marketing agencies and consultants',
-      'Technology vendors and suppliers'
+      'Technology vendors and suppliers',
+      'Other (specify with country-specific options below)'
     ];
   }
   
@@ -450,7 +454,8 @@ function getKeyPartnerOptions(ideaType?: string, category?: string): string[] {
       'Blockchain infrastructure providers',
       'Regulatory and legal advisors',
       'Security auditors',
-      'Financial institutions'
+      'Financial institutions',
+      'Other (specify with country-specific options below)'
     ];
   }
   
@@ -460,7 +465,8 @@ function getKeyPartnerOptions(ideaType?: string, category?: string): string[] {
       'Shipping and logistics companies',
       'Payment processors',
       'Marketing and advertising partners',
-      'Technology platforms (Shopify, WooCommerce)'
+      'Technology platforms (Shopify, WooCommerce)',
+      'Other (specify with country-specific options below)'
     ];
   }
   
@@ -470,7 +476,111 @@ function getKeyPartnerOptions(ideaType?: string, category?: string): string[] {
     'Strategic alliances',
     'Joint ventures',
     'Distributors and retailers',
-    'Service providers'
+    'Service providers',
+    'Other (specify with country-specific options below)'
+  ];
+}
+
+// Get country-specific partner options for education projects
+export function getCountrySpecificPartners(country: string, projectType: string): string[] {
+  const countryLower = country.toLowerCase();
+  const projectLower = projectType.toLowerCase();
+  
+  // Education projects
+  if (projectLower.includes('education') || projectLower.includes('تعليم') || projectLower.includes('school')) {
+    if (countryLower.includes('egypt') || countryLower.includes('مصر')) {
+      return [
+        'Private schools in Cairo (American schools, British schools)',
+        'Private schools in Alexandria',
+        'International schools (IB, IGCSE programs)',
+        'Language centers and institutes',
+        'Egyptian Ministry of Education',
+        'Educational technology companies in Egypt',
+        'Universities for partnerships (AUC, GUC, etc.)'
+      ];
+    }
+    
+    if (countryLower.includes('saudi') || countryLower.includes('السعودية')) {
+      return [
+        'Private schools in Riyadh',
+        'Private schools in Jeddah',
+        'International schools (American, British)',
+        'Saudi Ministry of Education',
+        'TATWEER Educational Technologies',
+        'Universities (KAUST, King Saud University)',
+        'EdTech companies in KSA'
+      ];
+    }
+    
+    if (countryLower.includes('uae') || countryLower.includes('الإمارات') || countryLower.includes('dubai')) {
+      return [
+        'Private schools in Dubai',
+        'Private schools in Abu Dhabi',
+        'International schools (IB, British curriculum)',
+        'KHDA (Knowledge and Human Development Authority)',
+        'ADEK (Abu Dhabi Department of Education)',
+        'EdTech companies in UAE',
+        'Universities in UAE'
+      ];
+    }
+  }
+  
+  // Restaurant/Food projects
+  if (projectLower.includes('restaurant') || projectLower.includes('food') || projectLower.includes('مطعم')) {
+    if (countryLower.includes('egypt') || countryLower.includes('مصر')) {
+      return [
+        'Local food suppliers in Egypt',
+        'Egyptian restaurants for partnerships',
+        'Food delivery platforms (Talabat, Uber Eats Egypt)',
+        'Tourism and restaurant associations',
+        'Egyptian chefs and culinary schools',
+        'Equipment suppliers in Cairo/Alexandria'
+      ];
+    }
+    
+    if (countryLower.includes('saudi') || countryLower.includes('السعودية')) {
+      return [
+        'Food suppliers in Saudi Arabia',
+        'Restaurant chains in KSA',
+        'Delivery platforms (HungerStation, Jahez, Mrsool)',
+        'Saudi Food and Drug Authority',
+        'Culinary institutes in KSA',
+        'Hotel and hospitality groups'
+      ];
+    }
+  }
+  
+  // Manufacturing/Factory projects
+  if (projectLower.includes('manufactur') || projectLower.includes('factory') || projectLower.includes('مصنع')) {
+    if (countryLower.includes('egypt') || countryLower.includes('مصر')) {
+      return [
+        'Industrial zones in Egypt (10th of Ramadan, 6th October)',
+        'Raw material suppliers in Egypt',
+        'Egyptian manufacturers associations',
+        'Export councils in Egypt',
+        'Shipping and logistics companies',
+        'Equipment suppliers and machinery dealers'
+      ];
+    }
+    
+    if (countryLower.includes('saudi') || countryLower.includes('السعودية')) {
+      return [
+        'Industrial cities in KSA (Jubail, Yanbu)',
+        'MODON (Saudi Industrial Property Authority)',
+        'Saudi manufacturers and suppliers',
+        'Saudi Export Development Authority',
+        'Logistics and shipping companies in KSA'
+      ];
+    }
+  }
+  
+  // Default country-specific options
+  return [
+    `Local suppliers in ${country}`,
+    `Government agencies in ${country}`,
+    `Business associations in ${country}`,
+    `Universities and research centers in ${country}`,
+    `Technology partners in ${country}`
   ];
 }
 

@@ -76,10 +76,28 @@ export default function Questions() {
   const handleAnswerChange = (answer: string) => {
     const currentSection = bmcSections[currentQuestionIndex];
     if (currentSection) {
-      setAnswers(prev => ({
-        ...prev,
-        [currentSection.id as keyof BMCAnswers]: answer
-      }));
+      if (currentSection.allowMultiple) {
+        // For multiple selection questions
+        const currentAnswers = (answers[currentSection.id as keyof BMCAnswers] || []) as string[];
+        const isArray = Array.isArray(currentAnswers);
+        const answersArray = isArray ? currentAnswers : [currentAnswers].filter(Boolean);
+        
+        // Toggle answer in array
+        const updatedAnswers = answersArray.includes(answer)
+          ? answersArray.filter((a: string) => a !== answer)
+          : [...answersArray, answer];
+        
+        setAnswers(prev => ({
+          ...prev,
+          [currentSection.id as keyof BMCAnswers]: updatedAnswers
+        }));
+      } else {
+        // For single selection questions
+        setAnswers(prev => ({
+          ...prev,
+          [currentSection.id as keyof BMCAnswers]: answer
+        }));
+      }
     }
   };
 
@@ -109,7 +127,7 @@ export default function Questions() {
   };
 
   const currentSection = bmcSections[currentQuestionIndex];
-  const currentAnswer = currentSection ? answers[currentSection.id as keyof BMCAnswers] || '' : '';
+  const currentAnswer = currentSection ? (answers[currentSection.id as keyof BMCAnswers] || (currentSection.allowMultiple ? [] : '')) : '';
 
   if (isLoading) {
     return (
@@ -215,23 +233,58 @@ export default function Questions() {
                 </p>
                 
                 <div className="space-y-3">
-                  {currentSection.options.map((option, index) => (
-                    <label key={index} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                      <input
-                        type="radio"
-                        name="answer"
-                        value={option}
-                        checked={currentAnswer === option}
-                        onChange={(e) => handleAnswerChange(e.target.value)}
-                        className="w-4 h-4 text-blue-600"
-                      />
-                      <span className="text-gray-700 flex-1">{option}</span>
-                      {currentAnswer === option && (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
-                      )}
-                    </label>
-                  ))}
+                  {currentSection.options.map((option, index) => {
+                    const isSelected = currentSection.allowMultiple
+                      ? Array.isArray(currentAnswer) && currentAnswer.includes(option)
+                      : currentAnswer === option;
+                    
+                    return (
+                      <label key={index} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                        <input
+                          type={currentSection.allowMultiple ? "checkbox" : "radio"}
+                          name="answer"
+                          value={option}
+                          checked={isSelected}
+                          onChange={(e) => handleAnswerChange(e.target.value)}
+                          className="w-4 h-4 text-blue-600"
+                        />
+                        <span className="text-gray-700 flex-1">{option}</span>
+                        {isSelected && (
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                      </label>
+                    );
+                  })}
                 </div>
+                
+                {/* Country-specific options if available */}
+                {currentSection.id === 'key_partners' && ideaData?.country && (
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                      <span>🌍</span>
+                      Recommended Partners in {ideaData.country}
+                    </h4>
+                    <p className="text-sm text-blue-700 mb-3">
+                      Based on your location and project type, here are specific partners you may consider:
+                    </p>
+                    <div className="space-y-2">
+                      {(() => {
+                        // Import the function dynamically
+                        const { getCountrySpecificPartners } = require('@/lib/bmc-questions');
+                        const specificPartners = getCountrySpecificPartners(
+                          ideaData.country || '',
+                          ideaData.analysis?.idea_type || ''
+                        );
+                        return specificPartners.map((partner: string, idx: number) => (
+                          <div key={idx} className="text-sm text-gray-700 flex items-start gap-2">
+                            <span className="text-blue-600">•</span>
+                            <span>{partner}</span>
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Navigation */}
@@ -250,7 +303,11 @@ export default function Questions() {
                   {currentQuestionIndex < bmcSections.length - 1 ? (
                     <Button
                       onClick={handleNext}
-                      disabled={!currentAnswer.trim()}
+                      disabled={
+                        currentSection.allowMultiple 
+                          ? (!Array.isArray(currentAnswer) || currentAnswer.length === 0)
+                          : (!currentAnswer || (typeof currentAnswer === 'string' && !currentAnswer.trim()))
+                      }
                       className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                     >
                       Next Section
@@ -259,7 +316,11 @@ export default function Questions() {
                   ) : (
                     <Button
                       onClick={handleNext}
-                      disabled={!currentAnswer.trim()}
+                      disabled={
+                        currentSection.allowMultiple 
+                          ? (!Array.isArray(currentAnswer) || currentAnswer.length === 0)
+                          : (!currentAnswer || (typeof currentAnswer === 'string' && !currentAnswer.trim()))
+                      }
                       className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
                     >
                       Generate My Business Model
