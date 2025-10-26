@@ -11,12 +11,19 @@ import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+interface IdeaAnalysis {
+  category?: string;
+  market_potential?: string;
+  next_steps?: string;
+  challenges?: string;
+}
+
 export default function NewIdea() {
   const { t } = useTranslation();
   const router = useRouter();
   const [ideaText, setIdeaText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<Record<string, unknown> | null>(null);
+  const [analysis, setAnalysis] = useState<IdeaAnalysis | null>(null);
 
   const handleSubmit = async () => {
     if (!ideaText.trim()) return;
