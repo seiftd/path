@@ -50,7 +50,7 @@ export const getRecommendedResources = async (
   }
 };
 
-const calculateRelevanceScore = (resource: any, ideaCategory: string): number => {
+const calculateRelevanceScore = (resource: {category: string; type: string; is_featured?: boolean}, ideaCategory: string): number => {
   let score = 0;
   
   // Base score
@@ -99,7 +99,7 @@ const getTypeScore = (type: string): number => {
   return typeScores[type] || 0;
 };
 
-const getRecommendationReason = (resource: any, ideaCategory: string): string => {
+const getRecommendationReason = (resource: {category: string}, ideaCategory: string): string => {
   const reasons: Record<string, string> = {
     'Foundation': 'Essential for setting up your business structure',
     'Product Development': 'Key for developing your product or service',
@@ -142,7 +142,7 @@ export const searchResources = async (
     const allResources = await getAllResources(userLanguage);
     
     // Filter resources based on search query and filters
-    let filteredResources = allResources.filter(resource => {
+    const filteredResources = allResources.filter((resource: {title: string; description?: string; category: string; type: string; is_featured?: boolean}) => {
       const matchesQuery = !query || 
         resource.title.toLowerCase().includes(query.toLowerCase()) ||
         resource.description?.toLowerCase().includes(query.toLowerCase());
@@ -168,7 +168,7 @@ export const searchResources = async (
   }
 };
 
-const calculateSearchScore = (resource: any, query: string): number => {
+const calculateSearchScore = (resource: {title: string; description?: string; is_featured?: boolean; type: string}, query: string): number => {
   if (!query) return 1;
   
   let score = 0;

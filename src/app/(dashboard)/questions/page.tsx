@@ -25,7 +25,7 @@ export default function Questions() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [ideaData, setIdeaData] = useState<any>(null);
+  const [ideaData, setIdeaData] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     // Load idea data from localStorage

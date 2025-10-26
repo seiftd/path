@@ -235,7 +235,7 @@ export const getUserById = async (userId: string) => {
   }
 };
 
-export const createUser = async (userData: any) => {
+export const createUser = async (userData: {id: string; email: string; firstName: string; lastName: string; language?: string}) => {
   const connection = await pool.getConnection();
   try {
     const { id, email, firstName, lastName, language = 'en' } = userData;
@@ -275,7 +275,7 @@ export const getAllResources = async (language: string = 'en') => {
   }
 };
 
-export const trackEvent = async (eventData: any) => {
+export const trackEvent = async (eventData: {id: string; eventType: string; userId?: string; ideaId?: string; metadata?: Record<string, unknown>; ipAddress?: string; userAgent?: string}) => {
   const connection = await pool.getConnection();
   try {
     const { id, eventType, userId, ideaId, metadata, ipAddress, userAgent } = eventData;

@@ -96,7 +96,7 @@ export const generateQuestions = async (ideaText: string, category: string, lang
   }
 };
 
-export const generatePathContent = async (ideaData: any, language: string = 'en') => {
+export const generatePathContent = async (ideaData: Record<string, unknown>, language: string = 'en') => {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   
   const prompt = `

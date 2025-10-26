@@ -30,7 +30,7 @@ export default function GeneratePath() {
   const { t } = useTranslation();
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(true);
-  const [pathData, setPathData] = useState<any>(null);
+  const [pathData, setPathData] = useState<Record<string, unknown> | null>(null);
   const [selectedNode, setSelectedNode] = useState<PathNode | null>(null);
   const [completedNodes, setCompletedNodes] = useState<string[]>([]);
 

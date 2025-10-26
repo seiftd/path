@@ -52,7 +52,7 @@ export function ResourceRecommendations({
   };
 
   const getTypeIcon = (type: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, React.ComponentType> = {
       course: Video,
       article: FileText,
       book: BookOpen,

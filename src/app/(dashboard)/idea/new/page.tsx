@@ -16,7 +16,7 @@ export default function NewIdea() {
   const router = useRouter();
   const [ideaText, setIdeaText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<any>(null);
+  const [analysis, setAnalysis] = useState<Record<string, unknown> | null>(null);
 
   const handleSubmit = async () => {
     if (!ideaText.trim()) return;

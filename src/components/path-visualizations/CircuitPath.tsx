@@ -35,7 +35,7 @@ export function CircuitPath({ nodes, onNodeClick, completedNodes }: CircuitPathP
   };
 
   const getNodeIcon = (nodeId: string) => {
-    const icons: Record<string, any> = {
+    const icons: Record<string, JSX.Element> = {
       foundation: <Zap className="w-6 h-6" />,
       product: <Cpu className="w-6 h-6" />,
       marketing: <Wifi className="w-6 h-6" />,

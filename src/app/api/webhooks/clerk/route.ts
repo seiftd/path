@@ -59,9 +59,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleUserCreated(data: any) {
+async function handleUserCreated(data: Record<string, unknown>) {
   try {
-    const { id, email_addresses, first_name, last_name } = data;
+    const { id, email_addresses, first_name, last_name } = data as {
+      id: string;
+      email_addresses: Array<{email_address: string}>;
+      first_name: string;
+      last_name: string;
+    };
     
     await createUser({
       id,
@@ -77,9 +82,14 @@ async function handleUserCreated(data: any) {
   }
 }
 
-async function handleUserUpdated(data: any) {
+async function handleUserUpdated(data: Record<string, unknown>) {
   try {
-    const { id, email_addresses, first_name, last_name } = data;
+    const { id, email_addresses, first_name, last_name } = data as {
+      id: string;
+      email_addresses: Array<{email_address: string}>;
+      first_name: string;
+      last_name: string;
+    };
     
     const connection = await import('@/lib/db').then(m => m.default);
     await connection.execute(
@@ -98,9 +108,9 @@ async function handleUserUpdated(data: any) {
   }
 }
 
-async function handleUserDeleted(data: any) {
+async function handleUserDeleted(data: Record<string, unknown>) {
   try {
-    const { id } = data;
+    const { id } = data as { id: string };
     
     const connection = await import('@/lib/db').then(m => m.default);
     await connection.execute('DELETE FROM users WHERE id = ?', [id]);

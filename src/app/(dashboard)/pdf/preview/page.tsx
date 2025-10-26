@@ -13,7 +13,7 @@ import Link from 'next/link';
 export default function PDFPreview() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [pdfData, setPdfData] = useState<any>(null);
+  const [pdfData, setPdfData] = useState<Record<string, unknown> | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
@@ -207,7 +207,7 @@ export default function PDFPreview() {
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Refined Information</h3>
                   <div className="space-y-3">
-                    {pdfData.responses.map((response: any, index: number) => (
+                    {(pdfData.responses as Array<{question: string; answer: string}>).map((response, index: number) => (
                       <div key={index} className="flex justify-between py-2 border-b border-gray-100">
                         <span className="font-medium text-gray-700">{response.question}</span>
                         <span className="text-gray-600">{response.answer}</span>
@@ -221,11 +221,11 @@ export default function PDFPreview() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Business Plan</h3>
                 <div className="space-y-6">
-                  {Object.entries(pdfData.pathContent).map(([category, steps]: [string, any]) => (
+                  {Object.entries(pdfData.pathContent).map(([category, steps]: [string, unknown]) => (
                     <div key={category}>
                       <h4 className="font-medium text-gray-900 mb-2">{category}</h4>
                       <ul className="space-y-1">
-                        {steps.map((step: string, index: number) => (
+                        {(steps as string[]).map((step: string, index: number) => (
                           <li key={index} className="flex items-start space-x-2">
                             <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-700">{step}</span>
@@ -242,7 +242,7 @@ export default function PDFPreview() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Recommended Resources</h3>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {pdfData.resources.map((resource: any, index: number) => (
+                    {(pdfData.resources as Array<{title: string; type: string}>).map((resource, index: number) => (
                       <div key={index} className="p-3 bg-gray-50 rounded-lg">
                         <div className="font-medium text-gray-900">{resource.title}</div>
                         <div className="text-sm text-gray-600 capitalize">{resource.type}</div>

@@ -110,7 +110,7 @@ export default function AdminDashboard() {
             {t('admin.title')}
           </h1>
           <p className="text-gray-600">
-            Welcome back, {user?.firstName}! Here's your platform overview.
+            Welcome back, {user?.firstName}! Here&apos;s your platform overview.
           </p>
         </div>
 
