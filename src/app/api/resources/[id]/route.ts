@@ -3,11 +3,12 @@ import { requireAuth } from '@/lib/auth';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAuth();
     
+    const { id } = await params;
     const resourceData = await request.json();
     const { category, type, title, url, description, language, isFeatured } = resourceData;
 
@@ -15,12 +16,12 @@ export async function PUT(
     
     await connection.execute(
       'UPDATE resources SET category = ?, type = ?, title = ?, url = ?, description = ?, language = ?, is_featured = ? WHERE id = ?',
-      [category, type, title, url, description, language, isFeatured, params.id]
+      [category, type, title, url, description, language, isFeatured, id]
     );
 
     return NextResponse.json({ 
       message: 'Resource updated successfully',
-      resource: { id: params.id, ...resourceData }
+      resource: { id, ...resourceData }
     });
   } catch (error) {
     console.error('Error updating resource:', error);
@@ -33,13 +34,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAuth();
     
+    const { id } = await params;
     const connection = await import('@/lib/db').then(m => m.default);
-    await connection.execute('DELETE FROM resources WHERE id = ?', [params.id]);
+    await connection.execute('DELETE FROM resources WHERE id = ?', [id]);
 
     return NextResponse.json({ 
       message: 'Resource deleted successfully'
