@@ -145,8 +145,8 @@ export default function PDFPreview() {
       ${(pdfData.idea as {text: string}).text}
       
       Business Plan:
-      ${Object.entries(pdfData.pathContent).map(([category, steps]) => 
-        `${category}:\n${(steps as string[]).map(step => `- ${step}`).join('\n')}`
+      ${Object.entries(pdfData.pathContent as Record<string, string[]>).map(([category, steps]) => 
+        `${category}:\n${steps.map(step => `- ${step}`).join('\n')}`
       ).join('\n\n')}
     `;
     
