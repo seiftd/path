@@ -164,12 +164,15 @@ export default function GeneratePath() {
 
   const handleNodeComplete = (nodeId: string) => {
     setCompletedNodes(prev => [...prev, nodeId]);
-    setPathData(prev => ({
-      ...prev,
-      nodes: prev.nodes.map((node: PathNode) => 
-        node.id === nodeId ? { ...node, status: 'completed' as const } : node
-      )
-    }));
+    setPathData(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        nodes: (prev.nodes as PathNode[]).map((node: PathNode) => 
+          node.id === nodeId ? { ...node, status: 'completed' as const } : node
+        )
+      };
+    });
   };
 
   const renderPathVisualization = () => {
