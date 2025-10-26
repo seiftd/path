@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "pricing": "Tarifs",
+    "ourStory": "Notre Histoire",
+    "signIn": "Se Connecter",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "tagline": "Co-fondateur IA",
+    "title": "Créez quelque chose que les gens veulent vraiment",
+    "subtitle": "Recherchez et planifiez votre produit avec l'IA",
+    "inputPlaceholder": "Je veux créer",
+    "brainstormIdeas": "Brainstormer des idées",
+    "privacyMode": "Mode privé"
+  },
+  "auth": {
+    "signIn": "Se Connecter",
+    "signUp": "S'inscrire",
+    "signOut": "Se Déconnecter",
+    "welcome": "Bienvenue sur Found Your Path"
+  },
+  "idea": {
+    "title": "Décrivez Votre Idée",
+    "placeholder": "Parlez-nous de votre idée d'entreprise en détail...",
+    "analyzing": "Analyse de votre idée...",
+    "category": "Catégorie",
+    "next": "Étape Suivante"
+  },
+  "questions": {
+    "title": "Affinons votre idée",
+    "subtitle": "Répondez à quelques questions pour nous aider à mieux comprendre votre vision",
+    "continue": "Continuer",
+    "back": "Retour"
+  },
+  "path": {
+    "title": "Votre Chemin vers le Succès",
+    "subtitle": "Suivez votre feuille de route personnalisée",
+    "node": {
+      "clickToExplore": "Cliquez pour explorer",
+      "completed": "Terminé",
+      "inProgress": "En Cours",
+      "notStarted": "Pas Commencé"
+    }
+  },
+  "resources": {
+    "title": "Ressources Recommandées",
+    "courses": "Cours",
+    "articles": "Articles",
+    "books": "Livres",
+    "tools": "Outils"
+  },
+  "pdf": {
+    "preview": "Aperçu du Rapport",
+    "download": "Télécharger PDF",
+    "price": "2 $ USD",
+    "title": "Votre Plan de Projet",
+    "generating": "Génération de votre plan..."
+  },
+  "payment": {
+    "title": "Téléchargez Votre Plan",
+    "description": "Obtenez votre plan de projet complet en PDF professionnel",
+    "price": "2,00 $",
+    "currency": "USD",
+    "payNow": "Payer Maintenant",
+    "processing": "Traitement du paiement...",
+    "success": "Paiement réussi !",
+    "error": "Le paiement a échoué. Veuillez réessayer."
+  },
+  "admin": {
+    "title": "Tableau de Bord Admin",
+    "users": "Utilisateurs",
+    "ideas": "Idées",
+    "payments": "Paiements",
+    "resources": "Ressources",
+    "analytics": "Analyses"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Quelque chose s'est mal passé",
+    "retry": "Réessayer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer"
+  }
+}
