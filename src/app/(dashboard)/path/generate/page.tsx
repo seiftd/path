@@ -29,6 +29,7 @@ interface PathNode {
 interface PathData {
   nodes: PathNode[];
   theme?: string;
+  category?: string;
   [key: string]: unknown;
 }
 
