@@ -133,18 +133,20 @@ export default function PDFPreview() {
   };
 
   const generatePDF = async () => {
+    if (!pdfData) return null;
+    
     // In real app, this would call the PDF generation API
     const mockPDFContent = `
       Business Blueprint Report
-      Generated for: ${pdfData.user.name}
+      Generated for: ${(pdfData.user as {name: string}).name}
       Date: ${new Date().toLocaleDateString()}
       
       Original Idea:
-      ${pdfData.idea.text}
+      ${(pdfData.idea as {text: string}).text}
       
       Business Plan:
       ${Object.entries(pdfData.pathContent).map(([category, steps]) => 
-        `${category}:\n${steps.map(step => `- ${step}`).join('\n')}`
+        `${category}:\n${(steps as string[]).map(step => `- ${step}`).join('\n')}`
       ).join('\n\n')}
     `;
     
