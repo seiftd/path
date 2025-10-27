@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
     const body = JSON.stringify(payload);
 
     const wh = new Webhook(webhookSecret);
-    let evt;
+    let evt: { type: string; data: Record<string, unknown> };
 
     try {
       evt = wh.verify(body, {
         'svix-id': svixId,
         'svix-timestamp': svixTimestamp,
         'svix-signature': svixSignature,
-      });
+      }) as { type: string; data: Record<string, unknown> };
     } catch (err) {
       console.error('Error verifying webhook:', err);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
