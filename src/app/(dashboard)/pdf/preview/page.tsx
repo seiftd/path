@@ -10,10 +10,19 @@ import { ArrowLeft, Download, Eye, CreditCard, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
+interface PDFData {
+  user: { name: string };
+  idea: { text: string; category?: string };
+  responses: Array<{ question: string; answer: string }>;
+  pathContent: Record<string, string[]>;
+  resources: Array<{ title: string; type: string }>;
+  [key: string]: unknown;
+}
+
 export default function PDFPreview() {
   const { t } = useTranslation();
   const router = useRouter();
-  const [pdfData, setPdfData] = useState<Record<string, unknown> | null>(null);
+  const [pdfData, setPdfData] = useState<PDFData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
@@ -138,14 +147,14 @@ export default function PDFPreview() {
     // In real app, this would call the PDF generation API
     const mockPDFContent = `
       Business Blueprint Report
-      Generated for: ${(pdfData.user as {name: string}).name}
+      Generated for: ${pdfData.user.name}
       Date: ${new Date().toLocaleDateString()}
       
       Original Idea:
-      ${(pdfData.idea as {text: string}).text}
+      ${pdfData.idea.text}
       
       Business Plan:
-      ${Object.entries(pdfData.pathContent as Record<string, string[]>).map(([category, steps]) => 
+      ${Object.entries(pdfData.pathContent).map(([category, steps]) => 
         `${category}:\n${steps.map(step => `- ${step}`).join('\n')}`
       ).join('\n\n')}
     `;
@@ -209,7 +218,7 @@ export default function PDFPreview() {
                 <div className="mb-8">
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Refined Information</h3>
                   <div className="space-y-3">
-                    {(pdfData.responses as Array<{question: string; answer: string}>).map((response, index: number) => (
+                    {pdfData.responses.map((response, index: number) => (
                       <div key={index} className="flex justify-between py-2 border-b border-gray-100">
                         <span className="font-medium text-gray-700">{response.question}</span>
                         <span className="text-gray-600">{response.answer}</span>
@@ -223,11 +232,11 @@ export default function PDFPreview() {
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">Your Business Plan</h3>
                 <div className="space-y-6">
-                  {Object.entries(pdfData.pathContent).map(([category, steps]: [string, unknown]) => (
+                  {Object.entries(pdfData.pathContent).map(([category, steps]) => (
                     <div key={category}>
                       <h4 className="font-medium text-gray-900 mb-2">{category}</h4>
                       <ul className="space-y-1">
-                        {(steps as string[]).map((step: string, index: number) => (
+                        {steps.map((step: string, index: number) => (
                           <li key={index} className="flex items-start space-x-2">
                             <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-700">{step}</span>
@@ -244,7 +253,7 @@ export default function PDFPreview() {
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-3">Recommended Resources</h3>
                   <div className="grid md:grid-cols-2 gap-4">
-                    {(pdfData.resources as Array<{title: string; type: string}>).map((resource, index: number) => (
+                    {pdfData.resources.map((resource, index: number) => (
                       <div key={index} className="p-3 bg-gray-50 rounded-lg">
                         <div className="font-medium text-gray-900">{resource.title}</div>
                         <div className="text-sm text-gray-600 capitalize">{resource.type}</div>
