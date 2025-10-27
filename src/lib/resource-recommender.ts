@@ -23,10 +23,25 @@ export const getRecommendedResources = async (
     
     // Calculate relevance scores based on idea category
     const scoredResources = allResources.map(resource => {
-      const res = resource as {category: string; type: string; is_featured?: boolean; [key: string]: unknown};
+      const res = resource as {
+        id: string;
+        title: string;
+        url: string;
+        type: 'course' | 'article' | 'book' | 'tool';
+        category: string;
+        description: string;
+        is_featured: boolean;
+        [key: string]: unknown;
+      };
       const relevanceScore = calculateRelevanceScore(res, ideaCategory);
       return {
-        ...res,
+        id: res.id,
+        title: res.title,
+        url: res.url,
+        type: res.type,
+        category: res.category,
+        description: res.description,
+        isFeatured: res.is_featured,
         relevanceScore,
         reason: getRecommendationReason(res, ideaCategory)
       };
@@ -36,8 +51,8 @@ export const getRecommendedResources = async (
     const sortedResources = scoredResources
       .sort((a, b) => {
         // Featured resources first
-        if (a.is_featured && !b.is_featured) return -1;
-        if (!a.is_featured && b.is_featured) return 1;
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
         
         // Then by relevance score
         return b.relevanceScore - a.relevanceScore;
@@ -120,9 +135,24 @@ export const getResourcesForPathNode = async (
     const resources = (await getResourcesByCategory(nodeCategory, userLanguage)) as unknown[];
     
     return resources.map(resource => {
-      const res = resource as {category: string; [key: string]: unknown};
+      const res = resource as {
+        id: string;
+        title: string;
+        url: string;
+        type: 'course' | 'article' | 'book' | 'tool';
+        category: string;
+        description: string;
+        is_featured: boolean;
+        [key: string]: unknown;
+      };
       return {
-        ...res,
+        id: res.id,
+        title: res.title,
+        url: res.url,
+        type: res.type,
+        category: res.category,
+        description: res.description,
+        isFeatured: res.is_featured,
         relevanceScore: 5, // High relevance for specific node
         reason: `Essential resources for ${nodeCategory}`
       };
@@ -147,7 +177,16 @@ export const searchResources = async (
     
     // Filter resources based on search query and filters
     const filteredResources = allResources.filter(item => {
-      const resource = item as {title: string; description?: string; category: string; type: string; is_featured?: boolean; [key: string]: unknown};
+      const resource = item as {
+        id: string;
+        title: string;
+        url: string;
+        type: 'course' | 'article' | 'book' | 'tool';
+        category: string;
+        description: string;
+        is_featured: boolean;
+        [key: string]: unknown;
+      };
       const matchesQuery = !query || 
         resource.title.toLowerCase().includes(query.toLowerCase()) ||
         resource.description?.toLowerCase().includes(query.toLowerCase());
@@ -161,9 +200,24 @@ export const searchResources = async (
     
     // Sort by relevance
     const scoredResources = filteredResources.map(item => {
-      const resource = item as {title: string; description?: string; is_featured?: boolean; type: string; [key: string]: unknown};
+      const resource = item as {
+        id: string;
+        title: string;
+        url: string;
+        type: 'course' | 'article' | 'book' | 'tool';
+        category: string;
+        description: string;
+        is_featured: boolean;
+        [key: string]: unknown;
+      };
       return {
-        ...resource,
+        id: resource.id,
+        title: resource.title,
+        url: resource.url,
+        type: resource.type,
+        category: resource.category,
+        description: resource.description,
+        isFeatured: resource.is_featured,
         relevanceScore: calculateSearchScore(resource, query),
         reason: 'Matches your search criteria'
       };
