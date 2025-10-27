@@ -19,15 +19,16 @@ export const getRecommendedResources = async (
 ): Promise<ResourceRecommendation[]> => {
   try {
     // Get all resources
-    const allResources = await getAllResources(userLanguage) as unknown[];
+    const allResources = (await getAllResources(userLanguage)) as unknown[];
     
     // Calculate relevance scores based on idea category
-    const scoredResources = allResources.map((resource: Record<string, unknown>) => {
-      const relevanceScore = calculateRelevanceScore(resource, ideaCategory);
+    const scoredResources = allResources.map(resource => {
+      const res = resource as Record<string, unknown>;
+      const relevanceScore = calculateRelevanceScore(res, ideaCategory);
       return {
-        ...resource,
+        ...res,
         relevanceScore,
-        reason: getRecommendationReason(resource, ideaCategory)
+        reason: getRecommendationReason(res, ideaCategory)
       };
     });
 
@@ -116,13 +117,16 @@ export const getResourcesForPathNode = async (
   userLanguage: string = 'en'
 ): Promise<ResourceRecommendation[]> => {
   try {
-    const resources = await getResourcesByCategory(nodeCategory, userLanguage) as unknown[];
+    const resources = (await getResourcesByCategory(nodeCategory, userLanguage)) as unknown[];
     
-    return resources.map((resource: Record<string, unknown>) => ({
-      ...resource,
-      relevanceScore: 5, // High relevance for specific node
-      reason: `Essential resources for ${nodeCategory}`
-    }));
+    return resources.map(resource => {
+      const res = resource as Record<string, unknown>;
+      return {
+        ...res,
+        relevanceScore: 5, // High relevance for specific node
+        reason: `Essential resources for ${nodeCategory}`
+      };
+    });
   } catch (error) {
     console.error('Error getting resources for path node:', error);
     return [];
@@ -139,10 +143,11 @@ export const searchResources = async (
   }
 ): Promise<ResourceRecommendation[]> => {
   try {
-    const allResources = await getAllResources(userLanguage) as unknown[];
+    const allResources = (await getAllResources(userLanguage)) as unknown[];
     
     // Filter resources based on search query and filters
-    const filteredResources = (allResources as Array<{title: string; description?: string; category: string; type: string; is_featured?: boolean}>).filter((resource: {title: string; description?: string; category: string; type: string; is_featured?: boolean}) => {
+    const filteredResources = allResources.filter(item => {
+      const resource = item as {title: string; description?: string; category: string; type: string; is_featured?: boolean};
       const matchesQuery = !query || 
         resource.title.toLowerCase().includes(query.toLowerCase()) ||
         resource.description?.toLowerCase().includes(query.toLowerCase());
@@ -155,11 +160,14 @@ export const searchResources = async (
     });
     
     // Sort by relevance
-    const scoredResources = filteredResources.map(resource => ({
-      ...resource,
-      relevanceScore: calculateSearchScore(resource, query),
-      reason: 'Matches your search criteria'
-    }));
+    const scoredResources = filteredResources.map(item => {
+      const resource = item as {title: string; description?: string; is_featured?: boolean; type: string};
+      return {
+        ...resource,
+        relevanceScore: calculateSearchScore(resource, query),
+        reason: 'Matches your search criteria'
+      };
+    });
     
     return scoredResources.sort((a, b) => b.relevanceScore - a.relevanceScore);
   } catch (error) {
