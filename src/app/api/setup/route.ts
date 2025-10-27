@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error setting up database:', error);
     return NextResponse.json(
-      { error: 'Failed to setup database', details: error.message },
+      { error: 'Failed to setup database', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
