@@ -331,7 +331,7 @@ function ResourceForm({
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-          <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
+          <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value as 'course' | 'article' | 'book' | 'tool'})}>
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
