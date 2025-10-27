@@ -36,7 +36,7 @@ export function AssemblyPath({ nodes, onNodeClick, completedNodes }: AssemblyPat
   };
 
   const getNodeIcon = (nodeId: string) => {
-    const icons: Record<string, JSX.Element> = {
+    const icons: Record<string, React.ReactElement> = {
       foundation: <Cog className="w-6 h-6" />,
       product: <Wrench className="w-6 h-6" />,
       marketing: <Circle className="w-6 h-6" />,
