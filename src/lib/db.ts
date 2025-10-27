@@ -1,5 +1,16 @@
 import mysql from 'mysql2/promise';
 
+// Database user type
+export interface DBUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  language: string;
+  created_at?: Date;
+  updated_at?: Date;
+}
+
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -222,20 +233,20 @@ export const seedInitialData = async () => {
 };
 
 // Database utility functions
-export const getUserById = async (userId: string) => {
+export const getUserById = async (userId: string): Promise<DBUser | undefined> => {
   const connection = await pool.getConnection();
   try {
     const [rows] = await connection.execute(
       'SELECT * FROM users WHERE id = ?',
       [userId]
     );
-    return (rows as unknown[])[0];
+    return (rows as DBUser[])[0];
   } finally {
     connection.release();
   }
 };
 
-export const createUser = async (userData: {id: string; email: string; firstName: string; lastName: string; language?: string}) => {
+export const createUser = async (userData: {id: string; email: string; firstName: string; lastName: string; language?: string}): Promise<DBUser> => {
   const connection = await pool.getConnection();
   try {
     const { id, email, firstName, lastName, language = 'en' } = userData;
@@ -243,7 +254,13 @@ export const createUser = async (userData: {id: string; email: string; firstName
       'INSERT INTO users (id, email, first_name, last_name, language) VALUES (?, ?, ?, ?, ?)',
       [id, email, firstName, lastName, language]
     );
-    return { id, email, firstName, lastName, language };
+    return { 
+      id, 
+      email, 
+      first_name: firstName, 
+      last_name: lastName, 
+      language 
+    };
   } finally {
     connection.release();
   }

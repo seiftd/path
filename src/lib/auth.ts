@@ -1,5 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { createUser, getUserById } from './db';
+import { createUser, getUserById, type DBUser } from './db';
 
 export const getCurrentUser = async () => {
   try {
@@ -7,7 +7,7 @@ export const getCurrentUser = async () => {
     if (!user) return null;
 
     // Check if user exists in our database
-    let dbUser = await getUserById(user.id);
+    let dbUser: DBUser | undefined = await getUserById(user.id);
     
     if (!dbUser) {
       // Create user in our database
