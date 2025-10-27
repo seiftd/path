@@ -23,7 +23,7 @@ export const getRecommendedResources = async (
     
     // Calculate relevance scores based on idea category
     const scoredResources = allResources.map(resource => {
-      const res = resource as Record<string, unknown>;
+      const res = resource as {category: string; type: string; is_featured?: boolean; [key: string]: unknown};
       const relevanceScore = calculateRelevanceScore(res, ideaCategory);
       return {
         ...res,
@@ -120,7 +120,7 @@ export const getResourcesForPathNode = async (
     const resources = (await getResourcesByCategory(nodeCategory, userLanguage)) as unknown[];
     
     return resources.map(resource => {
-      const res = resource as Record<string, unknown>;
+      const res = resource as {category: string; [key: string]: unknown};
       return {
         ...res,
         relevanceScore: 5, // High relevance for specific node
@@ -147,7 +147,7 @@ export const searchResources = async (
     
     // Filter resources based on search query and filters
     const filteredResources = allResources.filter(item => {
-      const resource = item as {title: string; description?: string; category: string; type: string; is_featured?: boolean};
+      const resource = item as {title: string; description?: string; category: string; type: string; is_featured?: boolean; [key: string]: unknown};
       const matchesQuery = !query || 
         resource.title.toLowerCase().includes(query.toLowerCase()) ||
         resource.description?.toLowerCase().includes(query.toLowerCase());
@@ -161,7 +161,7 @@ export const searchResources = async (
     
     // Sort by relevance
     const scoredResources = filteredResources.map(item => {
-      const resource = item as {title: string; description?: string; is_featured?: boolean; type: string};
+      const resource = item as {title: string; description?: string; is_featured?: boolean; type: string; [key: string]: unknown};
       return {
         ...resource,
         relevanceScore: calculateSearchScore(resource, query),
